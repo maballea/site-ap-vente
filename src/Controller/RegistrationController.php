@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+//TEST
+
 class RegistrationController extends AbstractController
 {
     #[Route('/register', name: 'app_register')]
