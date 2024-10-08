@@ -2,19 +2,33 @@
 
 namespace App\Entity;
 
-use App\Repository\AdministrateurRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: AdministrateurRepository::class)]
+#[ORM\Entity]
 class Administrateur
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'integer')]
+    private $id;
 
     public function getId(): ?int
     {
         return $this->id;
     }
+
+    public function gérerCommandes(array $commandes)
+    {
+        foreach ($commandes as $commande) {
+            if ($commande->getEtatCommande() === 'En traitement') {
+                $commande->setEtatCommande('Expédié');
+            }
+        }
+    }
+
+    public function optimiserParcoursEntrepot(ParcoursEntrepot $parcours)
+    {
+        $parcours->calculerCheminOptimal();
+    }
 }
+

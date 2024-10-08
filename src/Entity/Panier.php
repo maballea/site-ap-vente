@@ -2,19 +2,71 @@
 
 namespace App\Entity;
 
-use App\Repository\PanierRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
-#[ORM\Entity(repositoryClass: PanierRepository::class)]
+#[ORM\Entity]
 class Panier
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'integer')]
+    private $idPanier;
 
-    public function getId(): ?int
+    #[ORM\ManyToMany(targetEntity: Produit::class)]
+    private $produits;
+
+    public function __construct()
     {
-        return $this->id;
+        $this->produits = new ArrayCollection();
+    }
+
+    public function getIdPanier(): ?int
+    {
+        return $this->idPanier;
+    }
+
+    public function getProduits()
+    {
+        return $this->produits;
+    }
+
+    public function ajouterProduit(Produit $produit)
+    {
+        if (!$this->produits->contains($produit)) {
+            $this->produits[] = $produit;
+        }
+    }
+
+    public function modifierQuantite(Produit $produit, int $quantite)
+    {
+        foreach ($this->produits as $index => $p) {
+            if ($p->getId() === $produit->getId()) {
+                if ($quantite <= 0) {
+                    unset($this->produits[$index]);
+                }
+                // Implémenter gestion quantité si nécessaire
+            }
+        }
+    }
+
+    public function calculerTotal(): float
+    {
+        $total = 0;
+        foreach ($this->produits as $produit) {
+            $total += $produit->getPrix();
+        }
+        return $total;
+    }
+
+    public function estVide(): bool
+    {
+        return empty($this->produits);
+    }
+
+    public function viderPanier()
+    {
+        $this->produits = [];
     }
 }
+

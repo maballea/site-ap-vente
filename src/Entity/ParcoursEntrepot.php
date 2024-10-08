@@ -2,19 +2,46 @@
 
 namespace App\Entity;
 
-use App\Repository\ParcoursEntrepotRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ParcoursEntrepotRepository::class)]
+#[ORM\Entity]
 class ParcoursEntrepot
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'integer')]
+    private $idParcours;
 
-    public function getId(): ?int
+    #[ORM\Column(type: 'array')]
+    private $listeProduits;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private $cheminOptimal;
+
+    public function getIdParcours(): ?int
     {
-        return $this->id;
+        return $this->idParcours;
+    }
+
+    public function getListeProduits(): ?array
+    {
+        return $this->listeProduits;
+    }
+
+    public function setListeProduits(array $listeProduits): self
+    {
+        $this->listeProduits = $listeProduits;
+        return $this;
+    }
+
+    public function getCheminOptimal(): ?string
+    {
+        return $this->cheminOptimal;
+    }
+
+    public function calculerCheminOptimal()
+    {
+        // Algorithme pour calculer le chemin optimal
+        $this->cheminOptimal = 'Chemin optimal calculé';
     }
 }
