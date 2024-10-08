@@ -16,7 +16,6 @@ class ClientRepository extends ServiceEntityRepository
         parent::__construct($registry, Client::class);
     }
 
-<<<<<<< HEAD
 //    /**
 //     * @return Client[] Returns an array of Client objects
 //     */
