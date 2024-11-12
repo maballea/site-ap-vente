@@ -20,6 +20,7 @@ class Client
     private $historiqueCommandes;
 
     #[ORM\OneToOne(targetEntity: Panier::class)]
+    #[ORM\JoinColumn(name: 'panier_id', referencedColumnName: 'idPanier', nullable: true)]
     private $panier;
 
     public function __construct()
