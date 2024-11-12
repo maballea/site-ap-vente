@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -20,6 +22,17 @@ class Produit
 
     #[ORM\Column(type: 'integer')]
     private $stock;
+
+    /**
+     * @var Collection<int, ParcoursEntrepot>
+     */
+    #[ORM\ManyToMany(targetEntity: ParcoursEntrepot::class, mappedBy: 'lesProduits')]
+    private Collection $lesParcours;
+
+    public function __construct()
+    {
+        $this->lesParcours = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -67,6 +80,33 @@ class Produit
             'prix' => $this->prix,
             'stock' => $this->stock,
         ];
+    }
+
+    /**
+     * @return Collection<int, ParcoursEntrepot>
+     */
+    public function getLesParcours(): Collection
+    {
+        return $this->lesParcours;
+    }
+
+    public function addLesParcour(ParcoursEntrepot $lesParcour): static
+    {
+        if (!$this->lesParcours->contains($lesParcour)) {
+            $this->lesParcours->add($lesParcour);
+            $lesParcour->addLesProduit($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLesParcour(ParcoursEntrepot $lesParcour): static
+    {
+        if ($this->lesParcours->removeElement($lesParcour)) {
+            $lesParcour->removeLesProduit($this);
+        }
+
+        return $this;
     }
 }
 

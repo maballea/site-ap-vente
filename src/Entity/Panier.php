@@ -16,6 +16,12 @@ class Panier
     #[ORM\ManyToMany(targetEntity: Produit::class)]
     private $produits;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Commande $lesCommandes = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $lesPaniers = null;
+
     public function __construct()
     {
         $this->produits = new ArrayCollection();
@@ -68,5 +74,16 @@ class Panier
     {
         $this->produits = [];
     }
-}
 
+    public function getLesCommandes(): ?Commande
+    {
+        return $this->lesCommandes;
+    }
+
+    public function setLesCommandes(?Commande $lesCommandes): static
+    {
+        $this->lesCommandes = $lesCommandes;
+
+        return $this;
+    }
+}

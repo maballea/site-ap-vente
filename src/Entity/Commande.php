@@ -24,6 +24,9 @@ class Commande
     #[ORM\ManyToOne(targetEntity: Client::class)]
     private $client;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Panier $lesPaniers = null;
+
     public function getIdCommande(): ?int
     {
         return $this->idCommande;
@@ -81,5 +84,17 @@ class Commande
     public function suivreCommande(): string
     {
         return "L'état actuel de la commande est : " . $this->etatCommande;
+    }
+
+    public function getLesPaniers(): ?Panier
+    {
+        return $this->lesPaniers;
+    }
+
+    public function setLesPaniers(?Panier $lesPaniers): static
+    {
+        $this->lesPaniers = $lesPaniers;
+
+        return $this;
     }
 }
