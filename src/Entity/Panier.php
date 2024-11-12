@@ -19,6 +19,9 @@ class Panier
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Commande $lesCommandes = null;
 
+    #[ORM\OneToOne(targetEntity: Client::class)]
+    private $client;
+
     #[ORM\Column(length: 255)]
     private ?string $lesPaniers = null;
 
