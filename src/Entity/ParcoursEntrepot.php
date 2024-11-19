@@ -26,9 +26,16 @@ class ParcoursEntrepot
     #[ORM\ManyToMany(targetEntity: Produit::class, inversedBy: 'lesParcours')]
     private Collection $lesProduits;
 
+    /**
+     * @var Collection<int, Administrateur>
+     */
+    #[ORM\ManyToMany(targetEntity: Administrateur::class, mappedBy: 'lesParcoursEntrepots')]
+    private Collection $lesAdministrateurs;
+
     public function __construct()
     {
         $this->lesProduits = new ArrayCollection();
+        $this->lesAdministrateurs = new ArrayCollection();
     }
 
     public function getIdParcours(): ?int
@@ -78,6 +85,33 @@ class ParcoursEntrepot
     public function removeLesProduit(Produit $lesProduit): static
     {
         $this->lesProduits->removeElement($lesProduit);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Administrateur>
+     */
+    public function getLesAdministrateurs(): Collection
+    {
+        return $this->lesAdministrateurs;
+    }
+
+    public function addLesAdministrateur(Administrateur $lesAdministrateur): static
+    {
+        if (!$this->lesAdministrateurs->contains($lesAdministrateur)) {
+            $this->lesAdministrateurs->add($lesAdministrateur);
+            $lesAdministrateur->addLesParcoursEntrepot($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLesAdministrateur(Administrateur $lesAdministrateur): static
+    {
+        if ($this->lesAdministrateurs->removeElement($lesAdministrateur)) {
+            $lesAdministrateur->removeLesParcoursEntrepot($this);
+        }
 
         return $this;
     }

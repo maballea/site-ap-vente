@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -26,6 +28,23 @@ class Commande
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Panier $lesPaniers = null;
+
+    #[ORM\ManyToOne(inversedBy: 'lesCommandes')]
+    private ?Client $lesClients = null;
+
+    /**
+     * @var Collection<int, Produit>
+     */
+    #[ORM\OneToMany(targetEntity: Produit::class, mappedBy: 'lesCommandes')]
+    private Collection $lesProduits;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?DetailsCommande $lesDetailsCommandes = null;
+
+    public function __construct()
+    {
+        $this->lesProduits = new ArrayCollection();
+    }
 
     public function getIdCommande(): ?int
     {
@@ -94,6 +113,60 @@ class Commande
     public function setLesPaniers(?Panier $lesPaniers): static
     {
         $this->lesPaniers = $lesPaniers;
+
+        return $this;
+    }
+
+    public function getLesClients(): ?Client
+    {
+        return $this->lesClients;
+    }
+
+    public function setLesClients(?Client $lesClients): static
+    {
+        $this->lesClients = $lesClients;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Produit>
+     */
+    public function getLesProduits(): Collection
+    {
+        return $this->lesProduits;
+    }
+
+    public function addLesProduit(Produit $lesProduit): static
+    {
+        if (!$this->lesProduits->contains($lesProduit)) {
+            $this->lesProduits->add($lesProduit);
+            $lesProduit->setLesCommandes($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLesProduit(Produit $lesProduit): static
+    {
+        if ($this->lesProduits->removeElement($lesProduit)) {
+            // set the owning side to null (unless already changed)
+            if ($lesProduit->getLesCommandes() === $this) {
+                $lesProduit->setLesCommandes(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getLesDetailsCommandes(): ?DetailsCommande
+    {
+        return $this->lesDetailsCommandes;
+    }
+
+    public function setLesDetailsCommandes(?DetailsCommande $lesDetailsCommandes): static
+    {
+        $this->lesDetailsCommandes = $lesDetailsCommandes;
 
         return $this;
     }

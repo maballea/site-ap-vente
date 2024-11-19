@@ -29,9 +29,22 @@ class Produit
     #[ORM\ManyToMany(targetEntity: ParcoursEntrepot::class, mappedBy: 'lesProduits')]
     private Collection $lesParcours;
 
+    /**
+     * @var Collection<int, Panier>
+     */
+    #[ORM\ManyToMany(targetEntity: Panier::class, mappedBy: 'lesProduits')]
+    private Collection $lesPaniers;
+
+    #[ORM\ManyToOne(inversedBy: 'lesProduits')]
+    private ?DetailsCommande $lesDetailsCommande = null;
+
+    #[ORM\ManyToOne(inversedBy: 'lesProduits')]
+    private ?Commande $lesCommandes = null;
+
     public function __construct()
     {
         $this->lesParcours = new ArrayCollection();
+        $this->lesPaniers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -105,6 +118,57 @@ class Produit
         if ($this->lesParcours->removeElement($lesParcour)) {
             $lesParcour->removeLesProduit($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Panier>
+     */
+    public function getLesPaniers(): Collection
+    {
+        return $this->lesPaniers;
+    }
+
+    public function addLesPanier(Panier $lesPanier): static
+    {
+        if (!$this->lesPaniers->contains($lesPanier)) {
+            $this->lesPaniers->add($lesPanier);
+            $lesPanier->addLesProduit($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLesPanier(Panier $lesPanier): static
+    {
+        if ($this->lesPaniers->removeElement($lesPanier)) {
+            $lesPanier->removeLesProduit($this);
+        }
+
+        return $this;
+    }
+
+    public function getLesDetailsCommande(): ?DetailsCommande
+    {
+        return $this->lesDetailsCommande;
+    }
+
+    public function setLesDetailsCommande(?DetailsCommande $lesDetailsCommande): static
+    {
+        $this->lesDetailsCommande = $lesDetailsCommande;
+
+        return $this;
+    }
+
+    public function getLesCommandes(): ?Commande
+    {
+        return $this->lesCommandes;
+    }
+
+    public function setLesCommandes(?Commande $lesCommandes): static
+    {
+        $this->lesCommandes = $lesCommandes;
 
         return $this;
     }

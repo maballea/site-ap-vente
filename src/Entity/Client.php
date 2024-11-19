@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -23,9 +24,16 @@ class Client
     #[ORM\JoinColumn(name: 'panier_id', referencedColumnName: 'idPanier', nullable: true)]
     private $panier;
 
+    /**
+     * @var Collection<int, Commande>
+     */
+    #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'lesClients')]
+    private Collection $lesCommandes;
+
     public function __construct()
     {
         $this->historiqueCommandes = new ArrayCollection();
+        $this->lesCommandes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -98,6 +106,36 @@ class Client
             return $commande;
         }
         return null;
+    }
+
+    /**
+     * @return Collection<int, Commande>
+     */
+    public function getLesCommandes(): Collection
+    {
+        return $this->lesCommandes;
+    }
+
+    public function addLesCommande(Commande $lesCommande): static
+    {
+        if (!$this->lesCommandes->contains($lesCommande)) {
+            $this->lesCommandes->add($lesCommande);
+            $lesCommande->setLesClients($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLesCommande(Commande $lesCommande): static
+    {
+        if ($this->lesCommandes->removeElement($lesCommande)) {
+            // set the owning side to null (unless already changed)
+            if ($lesCommande->getLesClients() === $this) {
+                $lesCommande->setLesClients(null);
+            }
+        }
+
+        return $this;
     }
 }
 

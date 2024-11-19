@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -25,9 +26,16 @@ class Panier
     #[ORM\Column(length: 255)]
     private ?string $lesPaniers = null;
 
+    /**
+     * @var Collection<int, Produit>
+     */
+    #[ORM\ManyToMany(targetEntity: Produit::class, inversedBy: 'lesPaniers')]
+    private Collection $lesProduits;
+
     public function __construct()
     {
         $this->produits = new ArrayCollection();
+        $this->lesProduits = new ArrayCollection();
     }
 
     public function getIdPanier(): ?int
@@ -86,6 +94,30 @@ class Panier
     public function setLesCommandes(?Commande $lesCommandes): static
     {
         $this->lesCommandes = $lesCommandes;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Produit>
+     */
+    public function getLesProduits(): Collection
+    {
+        return $this->lesProduits;
+    }
+
+    public function addLesProduit(Produit $lesProduit): static
+    {
+        if (!$this->lesProduits->contains($lesProduit)) {
+            $this->lesProduits->add($lesProduit);
+        }
+
+        return $this;
+    }
+
+    public function removeLesProduit(Produit $lesProduit): static
+    {
+        $this->lesProduits->removeElement($lesProduit);
 
         return $this;
     }
