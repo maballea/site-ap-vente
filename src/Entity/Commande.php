@@ -2,34 +2,54 @@
 
 namespace App\Entity;
 
+use App\Repository\CommandeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: CommandeRepository::class)]
 class Commande
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $idCommande;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'datetime')]
-    private $dateCommande;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $dateCommande = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $etatCommande;
+    #[ORM\Column(length: 255)]
+    private ?string $etatCommande = null;
 
-    #[ORM\Column(type: 'decimal', scale: 2)]
-    private $totalCommande;
+    #[ORM\Column]
+    private ?float $totalCommande = null;
 
-    #[ORM\ManyToOne(targetEntity: Client::class)]
-    private $client;
+    #[ORM\ManyToOne(inversedBy: 'commandes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Client $client = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Panier $lesPaniers = null;
+    #[ORM\ManyToOne(inversedBy: 'commandes')]
+    private ?Administrateur $administrateur = null;
 
-    public function getIdCommande(): ?int
+    /**
+     * @var Collection<int, DetailsCommande>
+     */
+    #[ORM\OneToMany(targetEntity: DetailsCommande::class, mappedBy: 'commande', orphanRemoval: true)]
+    private Collection $detailsCommandes;
+
+    #[ORM\ManyToOne(targetEntity: ParcoursEntrepot::class, inversedBy: 'commandes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?ParcoursEntrepot $parcoursEntrepot = null;
+
+    public function __construct()
     {
-        return $this->idCommande;
+        $this->detailsCommandes = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
     public function getDateCommande(): ?\DateTimeInterface
@@ -37,9 +57,10 @@ class Commande
         return $this->dateCommande;
     }
 
-    public function setDateCommande(\DateTimeInterface $dateCommande): self
+    public function setDateCommande(\DateTimeInterface $dateCommande): static
     {
         $this->dateCommande = $dateCommande;
+
         return $this;
     }
 
@@ -48,9 +69,10 @@ class Commande
         return $this->etatCommande;
     }
 
-    public function setEtatCommande(string $etatCommande): self
+    public function setEtatCommande(string $etatCommande): static
     {
         $this->etatCommande = $etatCommande;
+
         return $this;
     }
 
@@ -59,9 +81,10 @@ class Commande
         return $this->totalCommande;
     }
 
-    public function setTotalCommande(float $totalCommande): self
+    public function setTotalCommande(float $totalCommande): static
     {
         $this->totalCommande = $totalCommande;
+
         return $this;
     }
 
@@ -70,31 +93,63 @@ class Commande
         return $this->client;
     }
 
-    public function setClient(?Client $client): self
+    public function setClient(?Client $client): static
     {
         $this->client = $client;
+
         return $this;
     }
 
-    public function calculerTotal(): float
+    public function getAdministrateur(): ?Administrateur
     {
-        return $this->totalCommande;
+        return $this->administrateur;
     }
 
-    public function suivreCommande(): string
+    public function setAdministrateur(?Administrateur $administrateur): static
     {
-        return "L'état actuel de la commande est : " . $this->etatCommande;
+        $this->administrateur = $administrateur;
+
+        return $this;
     }
 
-    public function getLesPaniers(): ?Panier
+    /**
+     * @return Collection<int, DetailsCommande>
+     */
+    public function getDetailsCommandes(): Collection
     {
-        return $this->lesPaniers;
+        return $this->detailsCommandes;
     }
 
-    public function setLesPaniers(?Panier $lesPaniers): static
+    public function addDetailsCommande(DetailsCommande $detailsCommande): static
     {
-        $this->lesPaniers = $lesPaniers;
+        if (!$this->detailsCommandes->contains($detailsCommande)) {
+            $this->detailsCommandes->add($detailsCommande);
+            $detailsCommande->setCommande($this);
+        }
 
+        return $this;
+    }
+
+    public function removeDetailsCommande(DetailsCommande $detailsCommande): static
+    {
+        if ($this->detailsCommandes->removeElement($detailsCommande)) {
+            // set the owning side to null (unless already changed)
+            if ($detailsCommande->getCommande() === $this) {
+                $detailsCommande->setCommande(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getParcoursEntrepot(): ?ParcoursEntrepot
+    {
+        return $this->parcoursEntrepot;
+    }
+
+    public function setParcoursEntrepot(?ParcoursEntrepot $parcoursEntrepot): static
+    {
+        $this->parcoursEntrepot = $parcoursEntrepot;
         return $this;
     }
 }

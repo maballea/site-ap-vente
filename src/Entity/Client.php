@@ -2,35 +2,100 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ClientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: ClientRepository::class)]
 class Client
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $adresseLivraison;
+    #[ORM\Column(length: 255)]
+    private ?string $nom = null;
 
-    #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'client')]
-    private $historiqueCommandes;
+    #[ORM\Column(length: 255)]
+    private ?string $prenom = null;
 
-    #[ORM\OneToOne(targetEntity: Panier::class)]
-    #[ORM\JoinColumn(name: 'panier_id', referencedColumnName: 'idPanier', nullable: true)]
-    private $panier;
+    #[ORM\Column(length: 255)]
+    private ?string $email = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $motDePasse = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $adresseLivraison = null;
+
+    #[ORM\OneToOne(mappedBy: 'client', cascade: ['persist', 'remove'])]
+    private ?Panier $panier = null;
+
+    /**
+     * @var Collection<int, Commande>
+     */
+    #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'client', orphanRemoval: true)]
+    private Collection $commandes;
 
     public function __construct()
     {
-        $this->historiqueCommandes = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
     }
+
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): static
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getPrenom(): ?string
+    {
+        return $this->prenom;
+    }
+
+    public function setPrenom(string $prenom): static
+    {
+        $this->prenom = $prenom;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getMotDePasse(): ?string
+    {
+        return $this->motDePasse;
+    }
+
+    public function setMotDePasse(string $motDePasse): static
+    {
+        $this->motDePasse = $motDePasse;
+
+        return $this;
     }
 
     public function getAdresseLivraison(): ?string
@@ -38,23 +103,10 @@ class Client
         return $this->adresseLivraison;
     }
 
-    public function setAdresseLivraison(string $adresseLivraison): self
+    public function setAdresseLivraison(string $adresseLivraison): static
     {
         $this->adresseLivraison = $adresseLivraison;
-        return $this;
-    }
 
-    public function getHistoriqueCommandes()
-    {
-        return $this->historiqueCommandes;
-    }
-
-    public function addCommande(Commande $commande): self
-    {
-        if (!$this->historiqueCommandes->contains($commande)) {
-            $this->historiqueCommandes[] = $commande;
-            $commande->setClient($this);
-        }
         return $this;
     }
 
@@ -63,41 +115,40 @@ class Client
         return $this->panier;
     }
 
-    public function setPanier(Panier $panier): self
+    public function setPanier(?Panier $panier): static
     {
         $this->panier = $panier;
+
         return $this;
     }
 
-    public function ajouterProduitPanier(Produit $produit)
+    /**
+     * @return Collection<int, Commande>
+     */
+    public function getCommandes(): Collection
     {
-        if ($this->panier) {
-            $this->panier->ajouterProduit($produit);
-        }
+        return $this->commandes;
     }
 
-    public function modifierPanier(Produit $produit, int $quantite)
+    public function addCommande(Commande $commande): static
     {
-        if ($this->panier) {
-            $this->panier->modifierQuantite($produit, $quantite);
-        }
-    }
-
-    public function validerCommande()
-    {
-        if ($this->panier && !$this->panier->estVide()) {
-            $commande = new Commande();
-            $commande->setDateCommande(new \DateTime());
-            $commande->setTotalCommande($this->panier->calculerTotal());
-            $commande->setEtatCommande('En traitement');
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes->add($commande);
             $commande->setClient($this);
-            $this->historiqueCommandes[] = $commande;
-
-            $this->panier->viderPanier();
-
-            return $commande;
         }
-        return null;
+
+        return $this;
+    }
+
+    public function removeCommande(Commande $commande): static
+    {
+        if ($this->commandes->removeElement($commande)) {
+            // set the owning side to null (unless already changed)
+            if ($commande->getClient() === $this) {
+                $commande->setClient(null);
+            }
+        }
+
+        return $this;
     }
 }
-

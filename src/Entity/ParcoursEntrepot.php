@@ -2,82 +2,77 @@
 
 namespace App\Entity;
 
+use App\Repository\ParcoursEntrepotRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: ParcoursEntrepotRepository::class)]
 class ParcoursEntrepot
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $idParcours;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'array')]
-    private $listeProduits;
-
-    #[ORM\Column(type: 'string', length: 255)]
-    private $cheminOptimal;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $cheminOptimise = null;
 
     /**
-     * @var Collection<int, Produit>
+     * @var Collection<int, Commande>
      */
-    #[ORM\ManyToMany(targetEntity: Produit::class, inversedBy: 'lesParcours')]
-    private Collection $lesProduits;
+    #[ORM\OneToMany(mappedBy: 'parcoursEntrepot', targetEntity: Commande::class)]
+    private Collection $commandes;
 
     public function __construct()
     {
-        $this->lesProduits = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
     }
 
-    public function getIdParcours(): ?int
+    public function getId(): ?int
     {
-        return $this->idParcours;
+        return $this->id;
     }
 
-    public function getListeProduits(): ?array
+    public function getCheminOptimise(): ?string
     {
-        return $this->listeProduits;
+        return $this->cheminOptimise;
     }
 
-    public function setListeProduits(array $listeProduits): self
+    public function setCheminOptimise(string $cheminOptimise): static
     {
-        $this->listeProduits = $listeProduits;
+        $this->cheminOptimise = $cheminOptimise;
+
         return $this;
     }
 
-    public function getCheminOptimal(): ?string
-    {
-        return $this->cheminOptimal;
-    }
-
-    public function calculerCheminOptimal()
-    {
-        // Algorithme pour calculer le chemin optimal
-        $this->cheminOptimal = 'Chemin optimal calculé';
-    }
-
     /**
-     * @return Collection<int, Produit>
+     * @return Collection<int, Commande>
      */
-    public function getLesProduits(): Collection
+    public function getCommandes(): Collection
     {
-        return $this->lesProduits;
+        return $this->commandes;
     }
 
-    public function addLesProduit(Produit $lesProduit): static
+    public function addCommande(Commande $commande): static
     {
-        if (!$this->lesProduits->contains($lesProduit)) {
-            $this->lesProduits->add($lesProduit);
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes->add($commande);
+            $commande->setParcoursEntrepot($this); // Associer le parcours à la commande
         }
 
         return $this;
     }
 
-    public function removeLesProduit(Produit $lesProduit): static
+    public function removeCommande(Commande $commande): static
     {
-        $this->lesProduits->removeElement($lesProduit);
+        if ($this->commandes->removeElement($commande)) {
+            // set the owning side to null (unless already changed)
+            if ($commande->getParcoursEntrepot() === $this) {
+                $commande->setParcoursEntrepot(null);
+            }
+        }
 
         return $this;
     }

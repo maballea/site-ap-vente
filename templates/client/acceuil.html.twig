@@ -1,0 +1,20 @@
+{# templates/client/accueil.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Page d'accueil{% endblock %}
+
+{% block body %}
+    <h1>Bienvenue, {% if client %}{{ client.prenom }}{% else %}invité{% endif %}!</h1>
+    
+    {% if client %}
+        <div>
+            <a href="{{ path('app_panier') }}">Mon Panier</a>
+        </div>
+    {% else %}
+        <div>
+            <a href="{{ path('app_register') }}">Inscription</a>
+            <a href="{{ path('app_login') }}">Connexion</a>
+        </div>
+    {% endif %}
+{% endblock %}

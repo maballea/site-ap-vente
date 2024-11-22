@@ -2,90 +2,72 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use App\Repository\PanierRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: PanierRepository::class)]
 class Panier
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $idPanier;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\ManyToMany(targetEntity: Produit::class)]
-    private $produits;
+    #[ORM\OneToOne(inversedBy: 'panier', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Client $client = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Commande $lesCommandes = null;
-
-    #[ORM\OneToOne(targetEntity: Client::class)]
-    private $client;
-
-    #[ORM\Column(length: 255)]
-    private ?string $lesPaniers = null;
+    /**
+     * @var Collection<int, Produit>
+     */
+    #[ORM\ManyToMany(targetEntity: Produit::class, inversedBy: 'paniers')]
+    private Collection $produits;
 
     public function __construct()
     {
         $this->produits = new ArrayCollection();
     }
 
-    public function getIdPanier(): ?int
+
+    public function getId(): ?int
     {
-        return $this->idPanier;
+        return $this->id;
     }
 
-    public function getProduits()
+    public function getClient(): ?Client
+    {
+        return $this->client;
+    }
+
+    public function setClient(Client $client): static
+    {
+        $this->client = $client;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Produit>
+     */
+    public function getProduits(): Collection
     {
         return $this->produits;
     }
 
-    public function ajouterProduit(Produit $produit)
+    public function addProduit(Produit $produit): static
     {
         if (!$this->produits->contains($produit)) {
-            $this->produits[] = $produit;
+            $this->produits->add($produit);
         }
+
+        return $this;
     }
 
-    public function modifierQuantite(Produit $produit, int $quantite)
+    public function removeProduit(Produit $produit): static
     {
-        foreach ($this->produits as $index => $p) {
-            if ($p->getId() === $produit->getId()) {
-                if ($quantite <= 0) {
-                    unset($this->produits[$index]);
-                }
-                // Implémenter gestion quantité si nécessaire
-            }
-        }
-    }
-
-    public function calculerTotal(): float
-    {
-        $total = 0;
-        foreach ($this->produits as $produit) {
-            $total += $produit->getPrix();
-        }
-        return $total;
-    }
-
-    public function estVide(): bool
-    {
-        return empty($this->produits);
-    }
-
-    public function viderPanier()
-    {
-        $this->produits = [];
-    }
-
-    public function getLesCommandes(): ?Commande
-    {
-        return $this->lesCommandes;
-    }
-
-    public function setLesCommandes(?Commande $lesCommandes): static
-    {
-        $this->lesCommandes = $lesCommandes;
+        $this->produits->removeElement($produit);
 
         return $this;
     }
