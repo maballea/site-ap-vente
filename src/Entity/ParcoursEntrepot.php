@@ -2,115 +2,76 @@
 
 namespace App\Entity;
 
+use App\Repository\ParcoursEntrepotRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: ParcoursEntrepotRepository::class)]
 class ParcoursEntrepot
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $idParcours;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'array')]
-    private $listeProduits;
-
-    #[ORM\Column(type: 'string', length: 255)]
-    private $cheminOptimal;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $cheminOptimise = null;
 
     /**
-     * @var Collection<int, Produit>
+     * @var Collection<int, Commande>
      */
-    #[ORM\ManyToMany(targetEntity: Produit::class, inversedBy: 'lesParcours')]
-    private Collection $lesProduits;
-
-    /**
-     * @var Collection<int, Administrateur>
-     */
-    #[ORM\ManyToMany(targetEntity: Administrateur::class, mappedBy: 'lesParcoursEntrepots')]
-    private Collection $lesAdministrateurs;
+    #[ORM\OneToMany(mappedBy: 'parcoursEntrepot', targetEntity: Commande::class)]
+    private Collection $commandes;
 
     public function __construct()
     {
-        $this->lesProduits = new ArrayCollection();
-        $this->lesAdministrateurs = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
     }
 
-    public function getIdParcours(): ?int
+    public function getId(): ?int
     {
-        return $this->idParcours;
+        return $this->id;
     }
 
-    public function getListeProduits(): ?array
+    public function getCheminOptimise(): ?string
     {
-        return $this->listeProduits;
+        return $this->cheminOptimise;
     }
 
-    public function setListeProduits(array $listeProduits): self
+    public function setCheminOptimise(string $cheminOptimise): static
     {
-        $this->listeProduits = $listeProduits;
-        return $this;
-    }
-
-    public function getCheminOptimal(): ?string
-    {
-        return $this->cheminOptimal;
-    }
-
-    public function calculerCheminOptimal()
-    {
-        // Algorithme pour calculer le chemin optimal
-        $this->cheminOptimal = 'Chemin optimal calculé';
-    }
-
-    /**
-     * @return Collection<int, Produit>
-     */
-    public function getLesProduits(): Collection
-    {
-        return $this->lesProduits;
-    }
-
-    public function addLesProduit(Produit $lesProduit): static
-    {
-        if (!$this->lesProduits->contains($lesProduit)) {
-            $this->lesProduits->add($lesProduit);
-        }
-
-        return $this;
-    }
-
-    public function removeLesProduit(Produit $lesProduit): static
-    {
-        $this->lesProduits->removeElement($lesProduit);
+        $this->cheminOptimise = $cheminOptimise;
 
         return $this;
     }
 
     /**
-     * @return Collection<int, Administrateur>
+     * @return Collection<int, Commande>
      */
-    public function getLesAdministrateurs(): Collection
+    public function getCommandes(): Collection
     {
-        return $this->lesAdministrateurs;
+        return $this->commandes;
     }
 
-    public function addLesAdministrateur(Administrateur $lesAdministrateur): static
+    public function addCommande(Commande $commande): static
     {
-        if (!$this->lesAdministrateurs->contains($lesAdministrateur)) {
-            $this->lesAdministrateurs->add($lesAdministrateur);
-            $lesAdministrateur->addLesParcoursEntrepot($this);
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes->add($commande);
+            $commande->setParcoursEntrepot($this); // Associer le parcours à la commande
         }
 
         return $this;
     }
 
-    public function removeLesAdministrateur(Administrateur $lesAdministrateur): static
+    public function removeCommande(Commande $commande): static
     {
-        if ($this->lesAdministrateurs->removeElement($lesAdministrateur)) {
-            $lesAdministrateur->removeLesParcoursEntrepot($this);
+        if ($this->commandes->removeElement($commande)) {
+            // set the owning side to null (unless already changed)
+            if ($commande->getParcoursEntrepot() === $this) {
+                $commande->setParcoursEntrepot(null);
+            }
         }
 
         return $this;

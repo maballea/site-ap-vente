@@ -2,49 +2,50 @@
 
 namespace App\Entity;
 
+use App\Repository\ProduitRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: ProduitRepository::class)]
 class Produit
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $nom;
+    #[ORM\Column(length: 255)]
+    private ?string $nom = null;
 
-    #[ORM\Column(type: 'decimal', scale: 2)]
-    private $prix;
+    #[ORM\Column(length: 255)]
+    private ?string $description = null;
 
-    #[ORM\Column(type: 'integer')]
-    private $stock;
+    #[ORM\Column]
+    private ?float $prix = null;
 
-    /**
-     * @var Collection<int, ParcoursEntrepot>
-     */
-    #[ORM\ManyToMany(targetEntity: ParcoursEntrepot::class, mappedBy: 'lesProduits')]
-    private Collection $lesParcours;
+    #[ORM\Column]
+    private ?int $quantiteStock = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $emplacementEntrepot = null;
 
     /**
      * @var Collection<int, Panier>
      */
-    #[ORM\ManyToMany(targetEntity: Panier::class, mappedBy: 'lesProduits')]
-    private Collection $lesPaniers;
+    #[ORM\ManyToMany(targetEntity: Panier::class, mappedBy: 'produits')]
+    private Collection $paniers;
 
-    #[ORM\ManyToOne(inversedBy: 'lesProduits')]
-    private ?DetailsCommande $lesDetailsCommande = null;
-
-    #[ORM\ManyToOne(inversedBy: 'lesProduits')]
-    private ?Commande $lesCommandes = null;
+    /**
+     * @var Collection<int, DetailsCommande>
+     */
+    #[ORM\OneToMany(targetEntity: DetailsCommande::class, mappedBy: 'produit', orphanRemoval: true)]
+    private Collection $detailsCommandes;
 
     public function __construct()
     {
-        $this->lesParcours = new ArrayCollection();
-        $this->lesPaniers = new ArrayCollection();
+        $this->paniers = new ArrayCollection();
+        $this->detailsCommandes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -57,9 +58,22 @@ class Produit
         return $this->nom;
     }
 
-    public function setNom(string $nom): self
+    public function setNom(string $nom): static
     {
         $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+
         return $this;
     }
 
@@ -68,56 +82,33 @@ class Produit
         return $this->prix;
     }
 
-    public function setPrix(float $prix): self
+    public function setPrix(float $prix): static
     {
         $this->prix = $prix;
-        return $this;
-    }
-
-    public function getStock(): ?int
-    {
-        return $this->stock;
-    }
-
-    public function setStock(int $stock): self
-    {
-        $this->stock = $stock;
-        return $this;
-    }
-
-    public function afficherDetails(): array
-    {
-        return [
-            'id' => $this->id,
-            'nom' => $this->nom,
-            'prix' => $this->prix,
-            'stock' => $this->stock,
-        ];
-    }
-
-    /**
-     * @return Collection<int, ParcoursEntrepot>
-     */
-    public function getLesParcours(): Collection
-    {
-        return $this->lesParcours;
-    }
-
-    public function addLesParcour(ParcoursEntrepot $lesParcour): static
-    {
-        if (!$this->lesParcours->contains($lesParcour)) {
-            $this->lesParcours->add($lesParcour);
-            $lesParcour->addLesProduit($this);
-        }
 
         return $this;
     }
 
-    public function removeLesParcour(ParcoursEntrepot $lesParcour): static
+    public function getQuantiteStock(): ?int
     {
-        if ($this->lesParcours->removeElement($lesParcour)) {
-            $lesParcour->removeLesProduit($this);
-        }
+        return $this->quantiteStock;
+    }
+
+    public function setQuantiteStock(int $quantiteStock): static
+    {
+        $this->quantiteStock = $quantiteStock;
+
+        return $this;
+    }
+
+    public function getEmplacementEntrepot(): ?string
+    {
+        return $this->emplacementEntrepot;
+    }
+
+    public function setEmplacementEntrepot(string $emplacementEntrepot): static
+    {
+        $this->emplacementEntrepot = $emplacementEntrepot;
 
         return $this;
     }
@@ -125,52 +116,57 @@ class Produit
     /**
      * @return Collection<int, Panier>
      */
-    public function getLesPaniers(): Collection
+    public function getPaniers(): Collection
     {
-        return $this->lesPaniers;
+        return $this->paniers;
     }
 
-    public function addLesPanier(Panier $lesPanier): static
+    public function addPanier(Panier $panier): static
     {
-        if (!$this->lesPaniers->contains($lesPanier)) {
-            $this->lesPaniers->add($lesPanier);
-            $lesPanier->addLesProduit($this);
+        if (!$this->paniers->contains($panier)) {
+            $this->paniers->add($panier);
+            $panier->addProduit($this);
         }
 
         return $this;
     }
 
-    public function removeLesPanier(Panier $lesPanier): static
+    public function removePanier(Panier $panier): static
     {
-        if ($this->lesPaniers->removeElement($lesPanier)) {
-            $lesPanier->removeLesProduit($this);
+        if ($this->paniers->removeElement($panier)) {
+            $panier->removeProduit($this);
         }
 
         return $this;
     }
 
-    public function getLesDetailsCommande(): ?DetailsCommande
+    /**
+     * @return Collection<int, DetailsCommande>
+     */
+    public function getDetailsCommandes(): Collection
     {
-        return $this->lesDetailsCommande;
+        return $this->detailsCommandes;
     }
 
-    public function setLesDetailsCommande(?DetailsCommande $lesDetailsCommande): static
+    public function addDetailsCommande(DetailsCommande $detailsCommande): static
     {
-        $this->lesDetailsCommande = $lesDetailsCommande;
+        if (!$this->detailsCommandes->contains($detailsCommande)) {
+            $this->detailsCommandes->add($detailsCommande);
+            $detailsCommande->setProduit($this);
+        }
 
         return $this;
     }
 
-    public function getLesCommandes(): ?Commande
+    public function removeDetailsCommande(DetailsCommande $detailsCommande): static
     {
-        return $this->lesCommandes;
-    }
-
-    public function setLesCommandes(?Commande $lesCommandes): static
-    {
-        $this->lesCommandes = $lesCommandes;
+        if ($this->detailsCommandes->removeElement($detailsCommande)) {
+            // set the owning side to null (unless already changed)
+            if ($detailsCommande->getProduit() === $this) {
+                $detailsCommande->setProduit(null);
+            }
+        }
 
         return $this;
     }
 }
-

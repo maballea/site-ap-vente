@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\DetailsCommandeRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DetailsCommandeRepository::class)]
@@ -15,48 +13,69 @@ class DetailsCommande
     #[ORM\Column]
     private ?int $id = null;
 
-    /**
-     * @var Collection<int, Produit>
-     */
-    #[ORM\OneToMany(targetEntity: Produit::class, mappedBy: 'lesDetailsCommande')]
-    private Collection $lesProduits;
+    #[ORM\Column]
+    private ?int $quantite = null;
 
-    public function __construct()
-    {
-        $this->lesProduits = new ArrayCollection();
-    }
+    #[ORM\Column]
+    private ?float $prixUnitaire = null;
+
+    #[ORM\ManyToOne(inversedBy: 'detailsCommandes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Commande $commande = null;
+
+    #[ORM\ManyToOne(inversedBy: 'detailsCommandes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Produit $produit = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @return Collection<int, Produit>
-     */
-    public function getLesProduits(): Collection
+    public function getQuantite(): ?int
     {
-        return $this->lesProduits;
+        return $this->quantite;
     }
 
-    public function addLesProduit(Produit $lesProduit): static
+    public function setQuantite(int $quantite): static
     {
-        if (!$this->lesProduits->contains($lesProduit)) {
-            $this->lesProduits->add($lesProduit);
-            $lesProduit->setLesDetailsCommande($this);
-        }
+        $this->quantite = $quantite;
 
         return $this;
     }
 
-    public function removeLesProduit(Produit $lesProduit): static
+    public function getPrixUnitaire(): ?float
     {
-        if ($this->lesProduits->removeElement($lesProduit)) {
-            // set the owning side to null (unless already changed)
-            if ($lesProduit->getLesDetailsCommande() === $this) {
-                $lesProduit->setLesDetailsCommande(null);
-            }
-        }
+        return $this->prixUnitaire;
+    }
+
+    public function setPrixUnitaire(float $prixUnitaire): static
+    {
+        $this->prixUnitaire = $prixUnitaire;
+
+        return $this;
+    }
+
+    public function getCommande(): ?Commande
+    {
+        return $this->commande;
+    }
+
+    public function setCommande(?Commande $commande): static
+    {
+        $this->commande = $commande;
+
+        return $this;
+    }
+
+    public function getProduit(): ?Produit
+    {
+        return $this->produit;
+    }
+
+    public function setProduit(?Produit $produit): static
+    {
+        $this->produit = $produit;
 
         return $this;
     }
