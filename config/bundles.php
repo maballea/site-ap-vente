@@ -13,5 +13,9 @@ return [
     Symfony\Bundle\SecurityBundle\SecurityBundle::class => ['all' => true],
     Symfony\Bundle\MonologBundle\MonologBundle::class => ['all' => true],
     Symfony\Bundle\MakerBundle\MakerBundle::class => ['dev' => true],
+<<<<<<< HEAD
     Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
+=======
+    Symfony\WebpackEncoreBundle\WebpackEncoreBundle::class => ['all' => true],
+>>>>>>> c847b097313442a1d8512f8f8dd35a0bd66184dd
 ];
