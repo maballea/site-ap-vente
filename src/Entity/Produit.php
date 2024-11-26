@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\ProduitRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: ProduitRepository::class)]
 class Produit
@@ -22,7 +24,16 @@ class Produit
     #[ORM\Column(type: 'float')]
     private $prix;
 
-    // Getters et setters
+    // La relation ManyToMany inverse avec Panier
+    #[ORM\ManyToMany(targetEntity: Panier::class, inversedBy: 'produits')]
+    #[ORM\JoinTable(name: 'panier_produit')]
+    private $paniers;
+
+    public function __construct()
+    {
+        $this->paniers = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -59,5 +70,10 @@ class Produit
     {
         $this->prix = $prix;
         return $this;
+    }
+
+    public function getPaniers(): Collection
+    {
+        return $this->paniers;
     }
 }

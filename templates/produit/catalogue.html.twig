@@ -13,6 +13,9 @@
                 {% if is_granted('ROLE_ADMIN') %}
                     <th>Actions</th>
                 {% endif %}
+                {% if is_granted('ROLE_CLIENT') %}
+                    <th>Ajouter au panier</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -26,13 +29,26 @@
                             <a href="{{ path('produit_edit', { id: produit.id }) }}">Modifier</a>
                         </td>
                     {% endif %}
+                    {% if is_granted('ROLE_CLIENT') %}
+                        <td>
+                            <a href="{{ path('panier_ajouter', { id: produit.id }) }}" class="btn btn-primary">Ajouter au panier</a>
+                        </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+
     {% if is_granted('ROLE_ADMIN') %}
         <a href="{{ path('produit_new') }}">Ajouter un produit</a>
     {% endif %}
-    <button type="button" onclick="window.location.href='{{ path('app_user') }}'">Retour à l'acceuil</button>
+
+    {% if is_granted('ROLE_ADMIN') %}
+        <button type="button" onclick="window.location.href='{{ path('admin_acceuil') }}'">Retour à l'accueil</button>
+    {% elseif is_granted('ROLE_CLIENT') %}
+        <button type="button" onclick="window.location.href='{{ path('client_acceuil') }}'">Retour à l'accueil</button>
+    {% else %}
+        <button type="button" onclick="window.location.href='{{ path('app_user') }}'">Retour à l'accueil</button>
+    {% endif %}
 
 {% endblock %}

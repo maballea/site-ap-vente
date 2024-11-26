@@ -20,7 +20,12 @@
 
 <button type="button" onclick="window.location.href='{{ path('produit_catalogue') }}'">Catalogue</button>
 
-<button type="button" onclick="window.location.href='{{ path('app_register') }}'">S'inscrire</button>
-<button type="button" onclick="window.location.href='{{ path('app_login') }}'">Se connecter</button>
+
+{% if app.user %}
+    <button type="button" onclick="window.location.href='{{ path('app_logout') }}'">Déconnexion</button>
+{% else %}
+    <button type="button" onclick="window.location.href='{{ path('app_register') }}'">S'inscrire</button>
+    <button type="button" onclick="window.location.href='{{ path('app_login') }}'">Se connecter</button>
+{% endif %}
 
 {% endblock %}
