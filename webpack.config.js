@@ -7,68 +7,60 @@ if (!Encore.isRuntimeEnvironmentConfigured()) {
 }
 
 Encore
-    // directory where compiled assets will be stored
+    // Directory where compiled assets will be stored
     .setOutputPath('public/build/')
-    // public path used by the web server to access the output path
+    // Public path used by the web server to access the output path
     .setPublicPath('/build')
-    // only needed for CDN's or subdirectory deploy
+    // Only needed for CDN's or subdirectory deploy
     //.setManifestKeyPrefix('build/')
 
     /*
-     * ENTRY CONFIG
+     * Entry configuration
      *
-     * Each entry will result in one JavaScript file (e.g. app.js)
-     * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
+     * Each entry will result in one JavaScript file (e.g., app.js)
+     * and one CSS file (e.g., app.css) if your JavaScript imports CSS.
      */
-    .addEntry('app', './assets/app.js')
+    .addEntry('app', './assets/app.js') // Point d'entrée de l'application
     .enableVueLoader()                  // Active le support Vue.js
-    .enableSassLoader() 
+    .enableSassLoader()                 // Active le support Sass/SCSS
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
-    .splitEntryChunks()
+    .splitEntryChunks()                 // Divise les fichiers d'entrée en morceaux plus petits
 
-    // will require an extra script tag for runtime.js
-    // but, you probably want this, unless you're building a single-page app
-    .enableSingleRuntimeChunk()
+    // Will require an extra script tag for runtime.js
+    // But, you probably want this, unless you're building a single-page app
+    .enableSingleRuntimeChunk()         // Crée un fichier runtime.js séparé
 
     /*
-     * FEATURE CONFIG
+     * Feature configuration
      *
      * Enable & configure other features below. For a full
      * list of features, see:
      * https://symfony.com/doc/current/frontend.html#adding-more-features
      */
-    .cleanupOutputBeforeBuild()
-    .enableBuildNotifications()
-    .enableSourceMaps(!Encore.isProduction())
-    // enables hashed filenames (e.g. app.abc123.css)
-    .enableVersioning(Encore.isProduction())
+    .cleanupOutputBeforeBuild()         // Supprime les anciens fichiers avant de construire les nouveaux
+    .enableBuildNotifications()         // Active les notifications de build
+    .enableSourceMaps(!Encore.isProduction()) // Active les sourcemaps en mode dev
+    .enableVersioning(Encore.isProduction()) // Active le versioning pour les fichiers en mode production
 
-    // configure Babel
-    // .configureBabel((config) => {
-    //     config.plugins.push('@babel/a-babel-plugin');
-    // })
-
-    // enables and configure @babel/preset-env polyfills
+    // Configure Babel
     .configureBabelPresetEnv((config) => {
-        config.useBuiltIns = 'usage';
-        config.corejs = '3.38';
+        config.useBuiltIns = 'usage'; // Permet d'ajouter les polyfills nécessaires
+        config.corejs = '3.38';       // Spécifie la version de core-js
     })
 
-    // enables Sass/SCSS support
-    //.enableSassLoader()
-
-    // uncomment if you use TypeScript
+    // Uncomment to enable TypeScript support
     //.enableTypeScriptLoader()
 
-    // uncomment if you use React
+    // Uncomment to enable React preset (if needed)
     //.enableReactPreset()
 
-    // uncomment to get integrity="..." attributes on your script & link tags
+    // Uncomment to get integrity="..." attributes on your script & link tags
     // requires WebpackEncoreBundle 1.4 or higher
     //.enableIntegrityHashes(Encore.isProduction())
 
-    // uncomment if you're having problems with a jQuery plugin
+    // Uncomment if you're having problems with a jQuery plugin
     //.autoProvidejQuery()
+
 ;
 
 module.exports = Encore.getWebpackConfig();
