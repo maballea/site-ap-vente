@@ -50,14 +50,12 @@ class Panier
         return $this->produits;
     }
 
-    public function addProduit(Produit $produit): self
-{
-    if (!$this->produits->contains($produit)) {
+   public function addProduit(Produit $produit): self
+    {
         $this->produits[] = $produit;
-        $produit->getPaniers()->add($this); // Synchronise avec l'entité Produit
+        $produit->getPaniers()->add($this); // Synchronisation avec l'entité Produit
+        return $this;
     }
-    return $this;
-}
 
 
 

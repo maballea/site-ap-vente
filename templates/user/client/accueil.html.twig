@@ -14,7 +14,18 @@
     <button type="button" onclick="window.location.href='{{ path('panier') }}'">Panier</button>
 
 
-    <button type="button" onclick="window.location.href='{{ path('app_logout') }}'">Déconnexion</button>
+    <button type="button" id="deconnexion-btn">Déconnexion</button>
+
+<script>
+    document.querySelector('#deconnexion-btn').addEventListener('click', function(event) {
+        if (!confirm('Êtes-vous sûr de vouloir vous déconnecter ? Votre panier sera perdu.')) {
+            event.preventDefault(); // Annuler la déconnexion si l'utilisateur refuse
+        } else {
+            window.location.href = '{{ path('app_logout') }}'; // Rediriger vers la route de déconnexion
+        }
+    });
+</script>
+
 
 
 </div>

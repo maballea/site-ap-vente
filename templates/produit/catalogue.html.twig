@@ -4,6 +4,13 @@
 
 {% block body %}
     <h1>Catalogue</h1>
+
+    <!-- Affichage du nombre d'objets dans le panier -->
+    <div id="panier-quantite">
+        <span>Articles dans le panier: </span><span id="quantite-panier">0</span>
+    </div>
+
+
     <table>
         <thead>
             <tr>
@@ -30,7 +37,10 @@
                         </td>
                     {% elseif is_granted('ROLE_CLIENT') %}
                         <td>
-                            <a href="{{ path('panier_ajouter', { id: produit.id }) }}" class="btn btn-primary">Ajouter au panier</a>
+                            <form action="{{ path('panier_ajouter', { id: produit.id }) }}" method="post">
+                                <input type="number" name="quantite" min="1" value="1" />
+                                <button type="submit" class="btn btn-primary">Ajouter au panier</button>
+                            </form>
                         </td>
                     {% endif %}
                 </tr>
@@ -38,16 +48,38 @@
         </tbody>
     </table>
 
+    <script>
+        // Fonction pour mettre à jour la quantité du panier
+        function updatePanierQuantite() {
+            fetch('{{ path('panier_quantite') }}')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('quantite-panier').textContent = data.quantite;
+                });
+        }
+
+        // Mettre à jour après chaque ajout au panier
+        document.querySelectorAll('.btn-ajouter-panier').forEach(button => {
+            button.addEventListener('click', function() {
+                updatePanierQuantite();
+            });
+        });
+
+        // Initialisation de la quantité au chargement de la page
+        updatePanierQuantite();
+    </script>
+
     {% if is_granted('ROLE_ADMIN') %}
         <a href="{{ path('produit_new') }}">Ajouter un produit</a>
     {% endif %}
 
     {% if is_granted('ROLE_ADMIN') %}
-        <button type="button" onclick="window.location.href='{{ path('admin_acceuil') }}'">Retour à l'accueil</button>
+        <button type="button" onclick="window.location.href='{{ path('admin_acceuil') }}'">Accueil</button>
     {% elseif is_granted('ROLE_CLIENT') %}
-        <button type="button" onclick="window.location.href='{{ path('client_acceuil') }}'">Retour à l'accueil</button>
-    {% else %}
-        <button type="button" onclick="window.location.href='{{ path('app_user') }}'">Retour à l'accueil</button>
-    {% endif %}
+        <button type="button" onclick="window.location.href='{{ path('client_acceuil') }}'">Accueil</button>
+                <button type="button" onclick="window.location.href='{{ path('panier') }}'">Panier</button>
 
+    {% else %}
+        <button type="button" onclick="window.location.href='{{ path('app_user') }}'">Accueil</button>
+    {% endif %}
 {% endblock %}
