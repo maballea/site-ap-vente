@@ -28,8 +28,7 @@
                         <td>
                             <a href="{{ path('produit_edit', { id: produit.id }) }}">Modifier</a>
                         </td>
-                    {% endif %}
-                    {% if is_granted('ROLE_CLIENT') %}
+                    {% elseif is_granted('ROLE_CLIENT') %}
                         <td>
                             <a href="{{ path('panier_ajouter', { id: produit.id }) }}" class="btn btn-primary">Ajouter au panier</a>
                         </td>

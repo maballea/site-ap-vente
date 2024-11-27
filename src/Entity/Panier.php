@@ -54,15 +54,20 @@ class Panier
 {
     if (!$this->produits->contains($produit)) {
         $this->produits[] = $produit;
+        $produit->getPaniers()->add($this); // Synchronise avec l'entité Produit
     }
     return $this;
 }
 
 
-    public function removeProduit(Produit $produit): self
-    {
-        $this->produits->removeElement($produit);
 
-        return $this;
+public function removeProduit(Produit $produit): self
+{
+    if ($this->produits->contains($produit)) {
+        $this->produits->removeElement($produit);
+        $produit->getPaniers()->removeElement($this); // Synchronisation avec l'entité Produit
     }
+    return $this;
+}
+
 }
