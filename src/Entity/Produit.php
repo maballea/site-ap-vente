@@ -24,10 +24,9 @@ class Produit
     #[ORM\Column(type: 'float')]
     private $prix;
 
-    // La relation ManyToMany inverse avec Panier
-    #[ORM\ManyToMany(targetEntity: Panier::class, inversedBy: 'produits')]
-    #[ORM\JoinTable(name: 'panier_produit')]
-    private $paniers;
+    #[ORM\ManyToOne(targetEntity: Categorie::class, inversedBy: 'produits')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Categorie $categorie = null;
 
     public function __construct()
     {
@@ -76,4 +75,16 @@ class Produit
     {
         return $this->paniers;
     }
+
+public function getCategorie(): ?Categorie
+{
+    return $this->categorie;
+}
+
+public function setCategorie(?Categorie $categorie): self
+{
+    $this->categorie = $categorie;
+    return $this;
+}
+
 }

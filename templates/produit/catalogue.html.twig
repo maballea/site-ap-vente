@@ -10,17 +10,16 @@
         <span>Articles dans le panier: </span><span id="quantite-panier">0</span>
     </div>
 
-
     <table>
         <thead>
             <tr>
                 <th>Nom</th>
                 <th>Description</th>
-                <th>Prix</th>
+                <th>Prix unitaire</th>
+                <th>Catégorie</th> <!-- Ajout de la colonne Catégorie -->
                 {% if is_granted('ROLE_ADMIN') %}
                     <th>Actions</th>
-                {% endif %}
-                {% if is_granted('ROLE_CLIENT') %}
+                {% elseif is_granted('ROLE_CLIENT') %}
                     <th>Ajouter au panier</th>
                 {% endif %}
             </tr>
@@ -31,6 +30,9 @@
                     <td>{{ produit.nom }}</td>
                     <td>{{ produit.description }}</td>
                     <td>{{ produit.prix }} €</td>
+
+                    <td>{{ produit.categorie.nom }}</td> <!-- Affichage de la catégorie -->
+                    
                     {% if is_granted('ROLE_ADMIN') %}
                         <td>
                             <a href="{{ path('produit_edit', { id: produit.id }) }}">Modifier</a>
@@ -71,14 +73,14 @@
 
     {% if is_granted('ROLE_ADMIN') %}
         <a href="{{ path('produit_new') }}">Ajouter un produit</a>
+        <a href="{{ path('categorie_new') }}">Ajouter une catégorie</a>
     {% endif %}
 
     {% if is_granted('ROLE_ADMIN') %}
         <button type="button" onclick="window.location.href='{{ path('admin_acceuil') }}'">Accueil</button>
     {% elseif is_granted('ROLE_CLIENT') %}
         <button type="button" onclick="window.location.href='{{ path('client_acceuil') }}'">Accueil</button>
-                <button type="button" onclick="window.location.href='{{ path('panier') }}'">Panier</button>
-
+        <button type="button" onclick="window.location.href='{{ path('panier') }}'">Panier</button>
     {% else %}
         <button type="button" onclick="window.location.href='{{ path('app_user') }}'">Accueil</button>
     {% endif %}
