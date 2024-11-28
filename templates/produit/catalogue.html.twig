@@ -10,45 +10,46 @@
         <span>Articles dans le panier: </span><span id="quantite-panier">0</span>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Nom</th>
-                <th>Description</th>
-                <th>Prix unitaire</th>
-                <th>Catégorie</th> <!-- Ajout de la colonne Catégorie -->
-                {% if is_granted('ROLE_ADMIN') %}
-                    <th>Actions</th>
-                {% elseif is_granted('ROLE_CLIENT') %}
-                    <th>Ajouter au panier</th>
-                {% endif %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for produit in produits %}
-                <tr>
-                    <td>{{ produit.nom }}</td>
-                    <td>{{ produit.description }}</td>
-                    <td>{{ produit.prix }} €</td>
+    {% for categorie, produits in produitsParCategorie %}
+        <h2>{{ categorie }}</h2> <!-- Affichage du nom de la catégorie -->
 
-                    <td>{{ produit.categorie.nom }}</td> <!-- Affichage de la catégorie -->
-                    
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Description</th>
+                    <th>Prix unitaire</th>
                     {% if is_granted('ROLE_ADMIN') %}
-                        <td>
-                            <a href="{{ path('produit_edit', { id: produit.id }) }}">Modifier</a>
-                        </td>
+                        <th>Actions</th>
                     {% elseif is_granted('ROLE_CLIENT') %}
-                        <td>
-                            <form action="{{ path('panier_ajouter', { id: produit.id }) }}" method="post">
-                                <input type="number" name="quantite" min="1" value="1" />
-                                <button type="submit" class="btn btn-primary">Ajouter au panier</button>
-                            </form>
-                        </td>
+                        <th>Ajouter au panier</th>
                     {% endif %}
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for produit in produits %}
+                    <tr>
+                        <td>{{ produit.nom }}</td>
+                        <td>{{ produit.description }}</td>
+                        <td>{{ produit.prix }} €</td>
+                        
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <td>
+                                <a href="{{ path('produit_edit', { id: produit.id }) }}">Modifier</a>
+                            </td>
+                        {% elseif is_granted('ROLE_CLIENT') %}
+                            <td>
+                                <form action="{{ path('panier_ajouter', { id: produit.id }) }}" method="post">
+                                    <input type="number" name="quantite" min="1" value="1" />
+                                    <button type="submit" class="btn btn-primary">Ajouter au panier</button>
+                                </form>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
 
     <script>
         // Fonction pour mettre à jour la quantité du panier

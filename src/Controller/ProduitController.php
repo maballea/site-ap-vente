@@ -14,13 +14,22 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProduitController extends AbstractController
 {
     #[Route('/catalogue', name: 'produit_catalogue')]
-    public function catalogue(ProduitRepository $produitRepository): Response
-    {
-        $produits = $produitRepository->findAll();
-        return $this->render('produit/catalogue.html.twig', [
-            'produits' => $produits,
-        ]);
+public function catalogue(ProduitRepository $produitRepository): Response
+{
+    // Récupération des produits triés par catégorie
+    $produits = $produitRepository->findBy([], ['categorie' => 'ASC', 'nom' => 'ASC']); // Tri par catégorie et nom
+
+    // Regroupement des produits par catégorie
+    $produitsParCategorie = [];
+    foreach ($produits as $produit) {
+        $produitsParCategorie[$produit->getCategorie()->getNom()][] = $produit;
     }
+
+    return $this->render('produit/catalogue.html.twig', [
+        'produitsParCategorie' => $produitsParCategorie,
+    ]);
+}
+
 
     #[Route('/produit/new', name: 'produit_new')]
 public function new(Request $request, EntityManagerInterface $entityManager): Response
