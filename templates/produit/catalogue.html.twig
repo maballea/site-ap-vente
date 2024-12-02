@@ -13,12 +13,12 @@
     <!-- Formulaire de tri -->
     <form method="GET" action="{{ path('produit_catalogue') }}">
         <label for="tri">Trier par :</label>
-        <select name="tri" id="tri">
-            <option value="nom" {% if app.request.get('tri') == 'nom' %}selected{% endif %}>Nom</option>
-            <option value="prix" {% if app.request.get('tri') == 'prix' %}selected{% endif %}>Prix</option>
-        </select>
-        <button type="submit">Trier</button>
+            <select name="tri" id="tri" onchange="this.form.submit()">
+                <option value="nom" {% if app.request.get('tri') == 'nom' %}selected{% endif %}>Nom</option>
+                <option value="prix" {% if app.request.get('tri') == 'prix' %}selected{% endif %}>Prix</option>
+            </select>
     </form>
+
 
     {% for categorie, produits in produitsParCategorie %}
         <h2>{{ categorie }}</h2> <!-- Affichage du nom de la catégorie -->

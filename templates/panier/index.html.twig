@@ -4,6 +4,15 @@
 
 {% block body %}
     <h1>Mon Panier</h1>
+
+    <form method="GET" action="{{ path('panier') }}">
+        <label for="tri">Trier par :</label>
+        <select name="tri" id="tri" onchange="this.form.submit()">
+            <option value="nom" {% if tri == 'nom' %}selected{% endif %}>Nom</option>
+            <option value="prix" {% if tri == 'prix' %}selected{% endif %}>Prix</option>
+        </select>
+    </form>
+    
     <table>
         <thead>
             <tr>

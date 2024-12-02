@@ -12,26 +12,39 @@ use Symfony\Component\Routing\Annotation\Route;
 class PanierController extends AbstractController
 {
     #[Route('/panier', name: 'panier')]
-    public function afficherPanier(SessionInterface $session, ProduitRepository $produitRepository)
-    {
-        $panier = $session->get('panier', []);
-        $dataPanier = [];
-        $total = 0;
+public function afficherPanier(SessionInterface $session, ProduitRepository $produitRepository, Request $request)
+{
+    $panier = $session->get('panier', []);
+    $dataPanier = [];
+    $total = 0;
 
-        foreach ($panier as $id => $quantite) {
-            $produit = $produitRepository->find($id);
-            $dataPanier[] = [
-                'produit' => $produit,
-                'quantite' => $quantite
-            ];
-            $total += $produit->getPrix() * $quantite;
-        }
+    // Récupérer le critère de tri
+    $tri = $request->query->get('tri', 'nom'); // Par défaut, tri par nom
 
-        return $this->render('panier/index.html.twig', [
-            'dataPanier' => $dataPanier,
-            'total' => $total
-        ]);
+    foreach ($panier as $id => $quantite) {
+        $produit = $produitRepository->find($id);
+        $dataPanier[] = [
+            'produit' => $produit,
+            'quantite' => $quantite
+        ];
+        $total += $produit->getPrix() * $quantite;
     }
+
+    // Appliquer le tri
+    usort($dataPanier, function ($a, $b) use ($tri) {
+        if ($tri === 'prix') {
+            return $a['produit']->getPrix() <=> $b['produit']->getPrix();
+        }
+        return strcmp($a['produit']->getNom(), $b['produit']->getNom());
+    });
+
+    return $this->render('panier/index.html.twig', [
+        'dataPanier' => $dataPanier,
+        'total' => $total,
+        'tri' => $tri // Passer la valeur du tri à la vue
+    ]);
+}
+
 
     // Pour augmenter la quantité
 #[Route('/panier/ajouterviapanier/{id}', name: 'panier_ajouter-via-panier')]
