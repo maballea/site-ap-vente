@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello UserController!{% endblock %}
+{% block title %}Page d'acceuil Administrateur !{% endblock %}
 
 {% block body %}
 <style>
@@ -9,7 +9,7 @@
 </style>
 
 <div >
-    <h1>Hello Admin ! ✅</h1>
+    <h1>Bienvenue, {{ app.user.prenom }} -Admin- ! ✅</h1>
     <button type="button" onclick="window.location.href='{{ path('produit_catalogue') }}'">Catalogue</button>
 
     <button type="button" id="deconnexion-btn">Déconnexion</button>

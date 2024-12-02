@@ -14,21 +14,30 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProduitController extends AbstractController
 {
     #[Route('/catalogue', name: 'produit_catalogue')]
-public function catalogue(ProduitRepository $produitRepository): Response
-{
-    // Récupération des produits triés par catégorie
-    $produits = $produitRepository->findBy([], ['categorie' => 'ASC', 'nom' => 'ASC']); // Tri par catégorie et nom
-
-    // Regroupement des produits par catégorie
-    $produitsParCategorie = [];
-    foreach ($produits as $produit) {
-        $produitsParCategorie[$produit->getCategorie()->getNom()][] = $produit;
+    public function catalogue(Request $request, ProduitRepository $produitRepository)
+    {
+        $tri = $request->query->get('tri', 'nom'); // Par défaut, trier par nom
+    
+        // Récupérer les produits par catégorie
+        $produitsParCategorie = $produitRepository->findAllGroupedByCategory();
+    
+        // Tri des produits dans chaque catégorie
+        foreach ($produitsParCategorie as $categorie => &$produits) {
+            if ($tri == 'prix') {
+                usort($produits, function($a, $b) {
+                    return $a->getPrix() <=> $b->getPrix();
+                });
+            } else {
+                usort($produits, function($a, $b) {
+                    return strcmp($a->getNom(), $b->getNom());
+                });
+            }
+        }
+    
+        return $this->render('produit/catalogue.html.twig', [
+            'produitsParCategorie' => $produitsParCategorie,
+        ]);
     }
-
-    return $this->render('produit/catalogue.html.twig', [
-        'produitsParCategorie' => $produitsParCategorie,
-    ]);
-}
 
 
     #[Route('/produit/new', name: 'produit_new')]
