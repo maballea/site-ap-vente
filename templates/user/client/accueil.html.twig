@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page d'acceuil Client !{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div >
+    <h1>Bienvenue, {{ app.user.prenom }} -Client- ! ✅</h1>
+    <button type="button" onclick="window.location.href='{{ path('produit_catalogue') }}'">Catalogue</button>
+    <button type="button" onclick="window.location.href='{{ path('panier') }}'">Panier</button>
+
+
+    <button type="button" id="deconnexion-btn">Déconnexion</button>
+
+<script>
+    document.querySelector('#deconnexion-btn').addEventListener('click', function(event) {
+        if (!confirm('Êtes-vous sûr de vouloir vous déconnecter ? Votre panier sera perdu.')) {
+            event.preventDefault(); // Annuler la déconnexion si l'utilisateur refuse
+        } else {
+            window.location.href = '{{ path('app_logout') }}'; // Rediriger vers la route de déconnexion
+        }
+    });
+</script>
+
+
+
+</div>
+{% endblock %}

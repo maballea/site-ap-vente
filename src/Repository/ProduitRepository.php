@@ -16,6 +16,29 @@ class ProduitRepository extends ServiceEntityRepository
         parent::__construct($registry, Produit::class);
     }
 
+    public function findAllGroupedByCategory()
+    {
+        // Construction de la requête pour récupérer les produits groupés par catégorie
+        $qb = $this->createQueryBuilder('p')
+            ->leftJoin('p.categorie', 'c')  // Assurez-vous que la relation 'categorie' existe
+            ->addSelect('c')
+            ->orderBy('c.nom', 'ASC')  // Tri par nom de catégorie
+            ->addOrderBy('p.nom', 'ASC')  // Tri par nom de produit
+
+            // Exécution de la requête
+            ->getQuery();
+
+        $result = $qb->getResult();
+
+        // Organiser les produits par catégorie
+        $produitsParCategorie = [];
+        foreach ($result as $produit) {
+            $produitsParCategorie[$produit->getCategorie()->getNom()][] = $produit;
+        }
+
+        return $produitsParCategorie;
+    }
+
     //    /**
     //     * @return Produit[] Returns an array of Produit objects
     //     */

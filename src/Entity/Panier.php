@@ -3,72 +3,69 @@
 namespace App\Entity;
 
 use App\Repository\PanierRepository;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PanierRepository::class)]
 class Panier
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'integer')]
+    private $id;
 
-    #[ORM\OneToOne(inversedBy: 'panier', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'panier')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Client $client = null;
+    private $user;
 
-    /**
-     * @var Collection<int, Produit>
-     */
-    #[ORM\ManyToMany(targetEntity: Produit::class, inversedBy: 'paniers')]
-    private Collection $produits;
+    // La relation ManyToMany avec Produit
+    #[ORM\ManyToMany(targetEntity: Produit::class, mappedBy: 'paniers')]
+    private $produits;
 
     public function __construct()
     {
         $this->produits = new ArrayCollection();
     }
 
-
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getClient(): ?Client
+    public function getUser(): ?User
     {
-        return $this->client;
+        return $this->user;
     }
 
-    public function setClient(Client $client): static
+    public function setUser(User $user): self
     {
-        $this->client = $client;
+        $this->user = $user;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Produit>
-     */
     public function getProduits(): Collection
     {
         return $this->produits;
     }
 
-    public function addProduit(Produit $produit): static
+   public function addProduit(Produit $produit): self
     {
-        if (!$this->produits->contains($produit)) {
-            $this->produits->add($produit);
-        }
-
+        $this->produits[] = $produit;
+        $produit->getPaniers()->add($this); // Synchronisation avec l'entité Produit
         return $this;
     }
 
-    public function removeProduit(Produit $produit): static
-    {
+
+
+public function removeProduit(Produit $produit): self
+{
+    if ($this->produits->contains($produit)) {
         $this->produits->removeElement($produit);
-
-        return $this;
+        $produit->getPaniers()->removeElement($this); // Synchronisation avec l'entité Produit
     }
+    return $this;
+}
+
 }

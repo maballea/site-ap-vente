@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Panier{% endblock %}
+
+{% block body %}
+    <h1>Mon Panier</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Description</th>
+                <th>Quantite</th>
+                <th>Prix Unitaire</th>
+                <th>Prix Total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for produit in dataPanier %}
+                <tr>
+                    <td>{{ produit.produit.nom }}</td>
+                    <td>{{ produit.produit.description }}</td>
+                    <td>{{ produit.quantite }}</td>
+                    <td>{{ produit.produit.prix }} €</td>
+                    <td>{{ produit.produit.prix * produit.quantite }} €</td> <!-- Calcul du prix total -->
+                    <td>
+                        <form action="{{ path('panier_ajouter-via-panier', { id: produit.produit.id }) }}" method="post">
+                            <button type="submit">Ajouter un produit</button>
+                        </form>
+                        <form action="{{ path('panier_reduire', { id: produit.produit.id }) }}" method="post">
+                            <button type="submit">Enlever un produit</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form action="{{ path('panier_supprimer', { id: produit.produit.id }) }}" method="post">
+                            <button type="submit">Supprimer un produit</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button type="button" onclick="window.location.href='{{ path('produit_catalogue') }}'">Catalogue</button>
+    <button type="button" onclick="window.location.href='{{ path('client_acceuil') }}'">Accueil</button>
+{% endblock %}
