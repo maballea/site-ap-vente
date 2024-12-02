@@ -86,4 +86,18 @@ public function edit(Request $request, Produit $produit, EntityManagerInterface 
     ]);
 }
 
+#[Route('/produit/{id}/delete', name: 'produit_delete')]
+public function delete(Produit $produit, EntityManagerInterface $entityManager): Response
+{
+    $this->denyAccessUnlessGranted('ROLE_ADMIN'); // Vérification des droits admin
+
+    $entityManager->remove($produit);
+    $entityManager->flush();
+
+    $this->addFlash('success', 'Le produit a été supprimé avec succès.');
+
+    return $this->redirectToRoute('produit_catalogue');
+}
+
+
 }

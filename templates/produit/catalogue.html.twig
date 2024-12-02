@@ -46,7 +46,10 @@
                         {% if is_granted('ROLE_ADMIN') %}
                             <td>
                                 <a href="{{ path('produit_edit', { id: produit.id }) }}">Modifier</a>
+                                <a href="{{ path('produit_delete', { id: produit.id }) }}" 
+                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?');">Supprimer</a>
                             </td>
+
                         {% elseif is_granted('ROLE_CLIENT') %}
                             <td>
                                 <form action="{{ path('panier_ajouter', { id: produit.id }) }}" method="post">
