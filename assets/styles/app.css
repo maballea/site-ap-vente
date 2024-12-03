@@ -1,3 +1,78 @@
+/* 1. Applique un fond blanc sur toute la page */
 body {
-    background-color: skyblue;
+    background-color: white !important; /* Fond blanc */
+    font-family: 'Arial', sans-serif;
+    color: #000000; /* Couleur du texte générale */
+    margin: 0;
+    padding: 0;
+    height: 100vh; /* Assurer que le fond couvre toute la hauteur de la page */
+    display: flex;
+    flex-direction: column; /* Assurer que le contenu reste en colonne */
+}
+
+/* 2. Ajouter un style à la section principale */
+.main-content {
+    padding: 2rem;
+    flex-grow: 1;
+    text-align: center; /* Centrer le texte dans le conteneur principal */
+}
+
+/* 3. Style des boutons pour utiliser les classes Bootstrap et personnalisation */
+button {
+    margin: 10px; /* Ajouter de l'espace autour des boutons */
+}
+
+/* 4. Ajouter un style personnalisé à l'en-tête */
+h1 {
+    font-size: 2rem;
+    color: #242424; /* Couleur du texte de l'en-tête */
+    font-weight: bold;
+    margin-bottom: 20px; /* Espacer l'en-tête du reste du contenu */
+}
+
+/* 5. Personnalisation des boutons Bootstrap */
+button.btn-custom {
+    background-color: #007bff; /* Couleur de fond bleue */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease; /* Transition au survol */
+}
+
+button.btn-custom:hover {
+    background-color: #0056b3; /* Couleur plus foncée au survol */
+}
+
+/* 6. Personnalisation des boutons Bootstrap pour le survol */
+button.btn-primary {
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+/* 7. Ajouter un petit style pour les messages ou alertes */
+.alert-custom {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 10px 0;
+    font-size: 1rem;
+    text-align: center; /* Centrer le texte dans l'alerte */
+}
+
+/* 8. Pour les petits écrans, ajuster les marges et la taille des éléments */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.5rem; /* Réduire la taille de l'en-tête sur les petits écrans */
+    }
+
+    button {
+        font-size: 0.9rem; /* Réduire la taille du texte sur les petits écrans */
+    }
+
+    .main-content {
+        padding: 1rem; /* Réduire le padding sur les petits écrans */
+    }
 }

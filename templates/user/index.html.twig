@@ -3,36 +3,37 @@
 {% block title %}Hello UserController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<!-- Contenu principal avec Bootstrap -->
+<div class="container py-5">
+    <h1 class="text-center mb-4">Bienvenue !</h1>
 
-<div class="example-wrapper">
-    <h1>Bienvenue !</h1>
+    <!-- Bouton catalogue -->
+    <div class="d-flex justify-content-center">
+        <button class="btn btn-primary" onclick="window.location.href='{{ path('produit_catalogue') }}'">Catalogue</button>
+    </div>
 
-    
+    {% if app.user %}
+        <!-- Bouton de déconnexion -->
+        <div class="d-flex justify-content-center mt-3">
+            <button class="btn btn-danger" id="deconnexion-btn">Déconnexion</button>
+        </div>
+
+        <script>
+            document.querySelector('#deconnexion-btn').addEventListener('click', function(event) {
+                if (!confirm('Êtes-vous sûr de vouloir vous déconnecter ? Votre panier sera perdu.')) {
+                    event.preventDefault(); // Annuler la déconnexion si l'utilisateur refuse
+                } else {
+                    window.location.href = '{{ path('app_logout') }}'; // Rediriger vers la route de déconnexion
+                }
+            });
+        </script>
+
+    {% else %}
+        <!-- Boutons d'inscription et de connexion -->
+        <div class="d-flex justify-content-center mt-3">
+            <button class="btn btn-success mx-2" onclick="window.location.href='{{ path('app_register') }}'">S'inscrire</button>
+            <button class="btn btn-info mx-2" onclick="window.location.href='{{ path('app_login') }}'">Se connecter</button>
+        </div>
+    {% endif %}
 </div>
-
-<button type="button" onclick="window.location.href='{{ path('produit_catalogue') }}'">Catalogue</button>
-
-
-{% if app.user %}
-    <button type="button" id="deconnexion-btn">Déconnexion</button>
-
-<script>
-    document.querySelector('#deconnexion-btn').addEventListener('click', function(event) {
-        if (!confirm('Êtes-vous sûr de vouloir vous déconnecter ? Votre panier sera perdu.')) {
-            event.preventDefault(); // Annuler la déconnexion si l'utilisateur refuse
-        } else {
-            window.location.href = '{{ path('app_logout') }}'; // Rediriger vers la route de déconnexion
-        }
-    });
-</script>
-
-{% else %}
-    <button type="button" onclick="window.location.href='{{ path('app_register') }}'">S'inscrire</button>
-    <button type="button" onclick="window.location.href='{{ path('app_login') }}'">Se connecter</button>
-{% endif %}
-
 {% endblock %}

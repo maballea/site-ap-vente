@@ -3,6 +3,15 @@
 {% block title %}Mon Panier{% endblock %}
 
 {% block body %}
+
+{% if not app.user %}
+        
+        <p><a href="{{ path('app_login') }}">Se connecter</a> pour ajouter des produits à votre panier.</p>
+    {% elseif not is_granted('ROLE_CLIENT') %}
+        <h1>{{ message }}</h1>
+        <p><a href="{{ path('app_login') }}">Se connecter</a> pour ajouter des produits à votre panier.</p>
+{% else %}
+
     <h1>Mon Panier</h1>
 
     <form method="GET" action="{{ path('panier') }}">
@@ -51,4 +60,5 @@
     </table>
     <button type="button" onclick="window.location.href='{{ path('produit_catalogue') }}'">Catalogue</button>
     <button type="button" onclick="window.location.href='{{ path('client_acceuil') }}'">Accueil</button>
+    {% endif %}
 {% endblock %}
