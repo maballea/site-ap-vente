@@ -7,9 +7,12 @@
     <h1 class="text-center mb-4">Catalogue</h1>
 
     <!-- Affichage du nombre d'objets dans le panier -->
+    {% if is_granted('ROLE_CLIENT') and not is_granted('ROLE_ADMIN') %}
     <div id="panier-quantite" class="alert alert-info d-inline-block">
         <span>Articles dans le panier: </span><span id="quantite-panier" class="fw-bold">0</span>
     </div>
+    {% endif %}
+
 
     <!-- Formulaire de tri des produits -->
     <form method="GET" action="{{ path('produit_catalogue') }}" class="mb-3 d-flex align-items-center">
