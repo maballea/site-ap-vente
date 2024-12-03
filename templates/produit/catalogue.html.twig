@@ -3,114 +3,101 @@
 {% block title %}Catalogue{% endblock %}
 
 {% block body %}
-    <h1>Catalogue</h1>
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Catalogue</h1>
 
+    
     <!-- Affichage du nombre d'objets dans le panier -->
-    <div id="panier-quantite">
-        <span>Articles dans le panier: </span><span id="quantite-panier">0</span>
+    <div id="panier-quantite" class="alert alert-info text-center">
+        <span>Articles dans le panier : </span><span id="quantite-panier" class="fw-bold">0</span>
     </div>
 
-    <!-- Formulaire de tri des produits -->
-    <form method="GET" action="{{ path('produit_catalogue') }}">
-        <label for="tri">Trier les produits par :</label>
-        <select name="tri" id="tri" onchange="this.form.submit()">
-            <option value="nom" {% if app.request.get('tri') == 'nom' %}selected{% endif %}>Nom (A-Z)</option>
-            <option value="nom_desc" {% if app.request.get('tri') == 'nom_desc' %}selected{% endif %}>Nom (Z-A)</option>
-            <option value="prix" {% if app.request.get('tri') == 'prix' %}selected{% endif %}>Prix croissant</option>
-            <option value="prix_desc" {% if app.request.get('tri') == 'prix_desc' %}selected{% endif %}>Prix décroissant</option>
-        </select>
-    </form>
-
-    <!-- Formulaire de tri des catégories -->
-    <form method="GET" action="{{ path('produit_catalogue') }}">
-        <label for="tri_categories">Trier les catégories par :</label>
-        <select name="tri_categories" id="tri_categories" onchange="this.form.submit()">
-            <option value="categorie_asc" {% if app.request.get('tri_categories') == 'categorie_asc' %}selected{% endif %}>Nom (A-Z)</option>
-            <option value="categorie_desc" {% if app.request.get('tri_categories') == 'categorie_desc' %}selected{% endif %}>Nom (Z-A)</option>
-        </select>
-</form>
-
+    <!-- Formulaires de tri -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form method="GET" action="{{ path('produit_catalogue') }}" class="d-flex align-items-center">
+                <label for="tri" class="me-2">Trier les produits par :</label>
+                <select name="tri" id="tri" class="form-select" onchange="this.form.submit()">
+                    <option value="nom" {% if app.request.get('tri') == 'nom' %}selected{% endif %}>Nom (A-Z)</option>
+                    <option value="nom_desc" {% if app.request.get('tri') == 'nom_desc' %}selected{% endif %}>Nom (Z-A)</option>
+                    <option value="prix" {% if app.request.get('tri') == 'prix' %}selected{% endif %}>Prix croissant</option>
+                    <option value="prix_desc" {% if app.request.get('tri') == 'prix_desc' %}selected{% endif %}>Prix décroissant</option>
+                </select>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <form method="GET" action="{{ path('produit_catalogue') }}" class="d-flex align-items-center">
+                <label for="tri_categories" class="me-2">Trier les catégories par :</label>
+                <select name="tri_categories" id="tri_categories" class="form-select" onchange="this.form.submit()">
+                    <option value="categorie_asc" {% if app.request.get('tri_categories') == 'categorie_asc' %}selected{% endif %}>Nom (A-Z)</option>
+                    <option value="categorie_desc" {% if app.request.get('tri_categories') == 'categorie_desc' %}selected{% endif %}>Nom (Z-A)</option>
+                </select>
+            </form>
+        </div>
+    </div>
 
     {% for categorie, produits in produitsParCategorie %}
-        <h2>{{ categorie }}</h2> <!-- Affichage du nom de la catégorie -->
-
-
-        {% if produits is empty %}
-            <p>Aucun produit dans cette catégorie.</p>
-        {% else %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Description</th>
-                        <th>Prix unitaire</th>
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <th>Actions</th>
-                        {% elseif is_granted('ROLE_CLIENT') %}
-                            <th>Ajouter au panier</th>
-                        {% endif %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for produit in produits %}
+        <div class="mb-4">
+            <h2 style="color: black;">{{ categorie }}</h2>
+            {% if produits is empty %}
+                <p class="text-muted">Aucun produit dans cette catégorie.</p>
+            {% else %}
+                <table class="table table-bordered table-hover mt-3">
+                    <thead class="table-dark">
                         <tr>
-                            <td>{{ produit.nom }}</td>
-                            <td>{{ produit.description }}</td>
-                            <td>{{ produit.prix }} €</td>
-                            
+                            <th>Nom</th>
+                            <th>Description</th>
+                            <th>Prix unitaire</th>
                             {% if is_granted('ROLE_ADMIN') %}
-                                <td>
-                                    <a href="{{ path('produit_edit', { id: produit.id }) }}">Modifier</a>
-                                    <a href="{{ path('produit_delete', { id: produit.id }) }}" 
-                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?');">Supprimer</a>
-                                </td>
+                                <th>Actions</th>
                             {% elseif is_granted('ROLE_CLIENT') %}
-                                <td>
-                                    <form action="{{ path('panier_ajouter', { id: produit.id }) }}" method="post">
-                                        <input type="number" name="quantite" min="1" value="1" />
-                                        <button type="submit" class="btn btn-primary">Ajouter au panier</button>
-                                    </form>
-                                </td>
+                                <th>Ajouter au panier</th>
                             {% endif %}
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
+                    </thead>
+                    <tbody>
+                        {% for produit in produits %}
+                            <tr>
+                                <td>{{ produit.nom }}</td>
+                                <td>{{ produit.description }}</td>
+                                <td>{{ produit.prix }} €</td>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <td>
+                                        <a href="{{ path('produit_edit', { id: produit.id }) }}" class="btn btn-warning btn-sm">Modifier</a>
+                                        <a href="{{ path('produit_delete', { id: produit.id }) }}" class="btn btn-danger btn-sm" 
+                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?');">Supprimer</a>
+                                    </td>
+                                {% elseif is_granted('ROLE_CLIENT') %}
+                                    <td>
+                                        <form action="{{ path('panier_ajouter', { id: produit.id }) }}" method="post" class="d-flex align-items-center">
+                                            <input type="number" name="quantite" min="1" value="1" class="form-control me-2" style="width: 70px;">
+                                            <button type="submit" class="btn btn-primary btn-sm">Ajouter</button>
+                                        </form>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
     {% endfor %}
 
-    <script>
-        // Fonction pour mettre à jour la quantité du panier
-        function updatePanierQuantite() {
-            fetch('{{ path('panier_quantite') }}')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('quantite-panier').textContent = data.quantite;
-                });
-        }
-
-        // Mettre à jour après chaque ajout au panier
-        document.querySelectorAll('.btn-ajouter-panier').forEach(button => {
-            button.addEventListener('click', function() {
-                updatePanierQuantite();
-            });
-        });
-
-        // Initialisation de la quantité au chargement de la page
-        updatePanierQuantite();
-    </script>
-
-    {% if is_granted('ROLE_ADMIN') %}
-        <a href="{{ path('produit_new') }}">Ajouter un produit</a>
-        <a href="{{ path('categorie_new') }}">Ajouter une catégorie</a>
-    {% endif %}
-
-    {% if is_granted('ROLE_ADMIN') %}
-        <button type="button" onclick="window.location.href='{{ path('admin_acceuil') }}'">Accueil</button>
-    {% elseif is_granted('ROLE_CLIENT') %}
-        <button type="button" onclick="window.location.href='{{ path('client_acceuil') }}'">Accueil</button>
-        <button type="button" onclick="window.location.href='{{ path('panier') }}'">Panier</button>
-    {% else %}
-        <button type="button" onclick="window.location.href='{{ path('app_user') }}'">Accueil</button>
-    {% endif %}
+    <div class="mt-4">
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('produit_new') }}" class="btn btn-success">Ajouter un produit</a>
+            <a href="{{ path('categorie_new') }}" class="btn btn-success">Ajouter une catégorie</a>
+        {% endif %}
+        <div class="mt-3">
+            {% if is_granted('ROLE_ADMIN') %}
+                <button type="button" onclick="window.location.href='{{ path('admin_acceuil') }}'" class="btn btn-secondary">Accueil Admin</button>
+            {% elseif is_granted('ROLE_CLIENT') %}
+                <button type="button" onclick="window.location.href='{{ path('client_acceuil') }}'" class="btn btn-secondary">Accueil Client</button>
+                <button type="button" onclick="window.location.href='{{ path('panier') }}'" class="btn btn-secondary">Voir le Panier</button>
+            {% else %}
+                <button type="button" onclick="window.location.href='{{ path('app_user') }}'" class="btn btn-secondary">Accueil</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}
