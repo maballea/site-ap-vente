@@ -16,5 +16,4 @@ return [
 
     Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
 
-    Symfony\WebpackEncoreBundle\WebpackEncoreBundle::class => ['all' => true],
-c847b097313442a1d8512f8f8dd35a0bd66184dd];
+    Symfony\WebpackEncoreBundle\WebpackEncoreBundle::class => ['all' => true]];
