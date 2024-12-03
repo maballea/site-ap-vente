@@ -15,29 +15,67 @@ class ProduitController extends AbstractController
 {
     #[Route('/catalogue', name: 'produit_catalogue')]
     public function catalogue(Request $request, ProduitRepository $produitRepository)
-    {
-        $tri = $request->query->get('tri', 'nom'); // Par défaut, trier par nom
-    
-        // Récupérer les produits par catégorie
-        $produitsParCategorie = $produitRepository->findAllGroupedByCategory();
-    
-        // Tri des produits dans chaque catégorie
-        foreach ($produitsParCategorie as $categorie => &$produits) {
-            if ($tri == 'prix') {
-                usort($produits, function($a, $b) {
-                    return $a->getPrix() <=> $b->getPrix();
-                });
-            } else {
-                usort($produits, function($a, $b) {
-                    return strcmp($a->getNom(), $b->getNom());
-                });
-            }
+{
+    $triProduits = $request->query->get('tri', 'nom'); // Par défaut : trier par nom A-Z
+    $triCategories = $request->query->get('tri_categories', 'categorie_asc'); // Par défaut : trier les catégories A-Z
+
+    // Récupérer les produits groupés par catégorie
+    $produitsParCategorie = $produitRepository->findAllGroupedByCategory();
+
+    // Tri des catégories
+    if (in_array($triCategories, ['categorie_asc', 'categorie_desc'])) {
+        if ($triCategories == 'categorie_desc') {
+            krsort($produitsParCategorie); // Trier par nom décroissant
+        } else {
+            ksort($produitsParCategorie); // Trier par nom croissant
         }
-    
-        return $this->render('produit/catalogue.html.twig', [
-            'produitsParCategorie' => $produitsParCategorie,
-        ]);
+    } elseif (in_array($triCategories, ['produits_asc', 'produits_desc'])) {
+        uasort($produitsParCategorie, function($a, $b) use ($triCategories) {
+            $countA = count($a);
+            $countB = count($b);
+            if ($triCategories == 'produits_asc') {
+                return $countA <=> $countB; // Nombre de produits croissant
+            } else {
+                return $countB <=> $countA; // Nombre de produits décroissant
+            }
+        });
     }
+
+    // Tri des produits dans chaque catégorie
+    foreach ($produitsParCategorie as $categorie => &$produits) {
+        switch ($triProduits) {
+            case 'nom_desc':
+                usort($produits, function($a, $b) {
+                    return strcmp($b->getNom(), $a->getNom()); // Nom Z-A
+                });
+                break;
+
+            case 'prix':
+                usort($produits, function($a, $b) {
+                    return $a->getPrix() <=> $b->getPrix(); // Prix croissant
+                });
+                break;
+
+            case 'prix_desc':
+                usort($produits, function($a, $b) {
+                    return $b->getPrix() <=> $a->getPrix(); // Prix décroissant
+                });
+                break;
+
+            default:
+                usort($produits, function($a, $b) {
+                    return strcmp($a->getNom(), $b->getNom()); // Nom A-Z
+                });
+        }
+    }
+
+    return $this->render('produit/catalogue.html.twig', [
+        'produitsParCategorie' => $produitsParCategorie,
+    ]);
+}
+
+
+    
 
 
     #[Route('/produit/new', name: 'produit_new')]

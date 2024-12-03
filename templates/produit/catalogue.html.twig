@@ -10,58 +10,73 @@
         <span>Articles dans le panier: </span><span id="quantite-panier">0</span>
     </div>
 
-    <!-- Formulaire de tri -->
+    <!-- Formulaire de tri des produits -->
     <form method="GET" action="{{ path('produit_catalogue') }}">
-        <label for="tri">Trier par :</label>
-            <select name="tri" id="tri" onchange="this.form.submit()">
-                <option value="nom" {% if app.request.get('tri') == 'nom' %}selected{% endif %}>Nom</option>
-                <option value="prix" {% if app.request.get('tri') == 'prix' %}selected{% endif %}>Prix</option>
-            </select>
+        <label for="tri">Trier les produits par :</label>
+        <select name="tri" id="tri" onchange="this.form.submit()">
+            <option value="nom" {% if app.request.get('tri') == 'nom' %}selected{% endif %}>Nom (A-Z)</option>
+            <option value="nom_desc" {% if app.request.get('tri') == 'nom_desc' %}selected{% endif %}>Nom (Z-A)</option>
+            <option value="prix" {% if app.request.get('tri') == 'prix' %}selected{% endif %}>Prix croissant</option>
+            <option value="prix_desc" {% if app.request.get('tri') == 'prix_desc' %}selected{% endif %}>Prix décroissant</option>
+        </select>
     </form>
+
+    <!-- Formulaire de tri des catégories -->
+    <form method="GET" action="{{ path('produit_catalogue') }}">
+        <label for="tri_categories">Trier les catégories par :</label>
+        <select name="tri_categories" id="tri_categories" onchange="this.form.submit()">
+            <option value="categorie_asc" {% if app.request.get('tri_categories') == 'categorie_asc' %}selected{% endif %}>Nom (A-Z)</option>
+            <option value="categorie_desc" {% if app.request.get('tri_categories') == 'categorie_desc' %}selected{% endif %}>Nom (Z-A)</option>
+        </select>
+</form>
 
 
     {% for categorie, produits in produitsParCategorie %}
         <h2>{{ categorie }}</h2> <!-- Affichage du nom de la catégorie -->
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Nom</th>
-                    <th>Description</th>
-                    <th>Prix unitaire</th>
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <th>Actions</th>
-                    {% elseif is_granted('ROLE_CLIENT') %}
-                        <th>Ajouter au panier</th>
-                    {% endif %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for produit in produits %}
-                    <tr>
-                        <td>{{ produit.nom }}</td>
-                        <td>{{ produit.description }}</td>
-                        <td>{{ produit.prix }} €</td>
-                        
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <td>
-                                <a href="{{ path('produit_edit', { id: produit.id }) }}">Modifier</a>
-                                <a href="{{ path('produit_delete', { id: produit.id }) }}" 
-                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?');">Supprimer</a>
-                            </td>
 
+        {% if produits is empty %}
+            <p>Aucun produit dans cette catégorie.</p>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Description</th>
+                        <th>Prix unitaire</th>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <th>Actions</th>
                         {% elseif is_granted('ROLE_CLIENT') %}
-                            <td>
-                                <form action="{{ path('panier_ajouter', { id: produit.id }) }}" method="post">
-                                    <input type="number" name="quantite" min="1" value="1" />
-                                    <button type="submit" class="btn btn-primary">Ajouter au panier</button>
-                                </form>
-                            </td>
+                            <th>Ajouter au panier</th>
                         {% endif %}
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for produit in produits %}
+                        <tr>
+                            <td>{{ produit.nom }}</td>
+                            <td>{{ produit.description }}</td>
+                            <td>{{ produit.prix }} €</td>
+                            
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <td>
+                                    <a href="{{ path('produit_edit', { id: produit.id }) }}">Modifier</a>
+                                    <a href="{{ path('produit_delete', { id: produit.id }) }}" 
+                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?');">Supprimer</a>
+                                </td>
+                            {% elseif is_granted('ROLE_CLIENT') %}
+                                <td>
+                                    <form action="{{ path('panier_ajouter', { id: produit.id }) }}" method="post">
+                                        <input type="number" name="quantite" min="1" value="1" />
+                                        <button type="submit" class="btn btn-primary">Ajouter au panier</button>
+                                    </form>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
     {% endfor %}
 
     <script>

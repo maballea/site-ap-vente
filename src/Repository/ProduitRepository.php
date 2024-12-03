@@ -17,27 +17,27 @@ class ProduitRepository extends ServiceEntityRepository
     }
 
     public function findAllGroupedByCategory()
-    {
-        // Construction de la requête pour récupérer les produits groupés par catégorie
-        $qb = $this->createQueryBuilder('p')
-            ->leftJoin('p.categorie', 'c')  // Assurez-vous que la relation 'categorie' existe
-            ->addSelect('c')
-            ->orderBy('c.nom', 'ASC')  // Tri par nom de catégorie
-            ->addOrderBy('p.nom', 'ASC')  // Tri par nom de produit
+{
+    // Accéder à l'EntityManager via getEntityManager()
+    $qb = $this->getEntityManager()->createQueryBuilder()
+        ->select('c, p')
+        ->from('App\Entity\Categorie', 'c') // Requête sur la table des catégories
+        ->leftJoin('c.produits', 'p')       // Relation avec les produits
+        ->orderBy('c.nom', 'ASC')          // Trier par nom de catégorie
+        ->addOrderBy('p.nom', 'ASC');      // Trier les produits par nom
 
-            // Exécution de la requête
-            ->getQuery();
+    $result = $qb->getQuery()->getResult();
 
-        $result = $qb->getResult();
-
-        // Organiser les produits par catégorie
-        $produitsParCategorie = [];
-        foreach ($result as $produit) {
-            $produitsParCategorie[$produit->getCategorie()->getNom()][] = $produit;
-        }
-
-        return $produitsParCategorie;
+    // Organiser les produits par catégorie
+    $produitsParCategorie = [];
+    foreach ($result as $categorie) {
+        $produitsParCategorie[$categorie->getNom()] = $categorie->getProduits()->toArray();
     }
+
+    return $produitsParCategorie;
+}
+
+
 
     //    /**
     //     * @return Produit[] Returns an array of Produit objects
