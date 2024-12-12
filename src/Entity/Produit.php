@@ -24,14 +24,46 @@ class Produit
     #[ORM\Column(type: 'float')]
     private $prix;
 
+    
+
     #[ORM\ManyToOne(targetEntity: Categorie::class, inversedBy: 'produits')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Categorie $categorie = null;
 
-    public function __construct()
-    {
-        // Initialise la collection de paniers si nécessaire
+    #[ORM\OneToMany(mappedBy: 'produit', targetEntity: DetailsCommande::class, cascade: ['persist', 'remove'])]
+private Collection $detailsCommandes;
+
+public function __construct()
+{
+    $this->detailsCommandes = new ArrayCollection();
+}
+
+public function getDetailsCommandes(): Collection
+{
+    return $this->detailsCommandes;
+}
+
+public function addDetailsCommande(DetailsCommande $detailsCommande): self
+{
+    if (!$this->detailsCommandes->contains($detailsCommande)) {
+        $this->detailsCommandes[] = $detailsCommande;
+        $detailsCommande->setProduit($this);
     }
+
+    return $this;
+}
+
+public function removeDetailsCommande(DetailsCommande $detailsCommande): self
+{
+    if ($this->detailsCommandes->removeElement($detailsCommande)) {
+        // Set the owning side to null (unless already changed)
+        if ($detailsCommande->getProduit() === $this) {
+            $detailsCommande->setProduit(null);
+        }
+    }
+
+    return $this;
+}
 
     public function getId(): ?int
     {

@@ -44,11 +44,13 @@
                         <td>{{ produit.produit.prix }} €</td>
                         <td>{{ produit.produit.prix * produit.quantite }} €</td> <!-- Calcul du prix total -->
                         <td>
-                            <form action="{{ path('panier_ajouter', { id: produit.produit.id }) }}" method="post">
-                                <button type="submit">Ajouter un produit</button>
+                            <form action="{{ path('panier_ajouter', { id: produit.produit.id }) }}" method="post" class="d-flex align-items-center">
+                                <input type="number" name="quantite" min="1" value="0" class="form-control me-2" style="width: 80px;">
+                                <button type="submit" class="btn btn-primary btn-sm">Ajouter</button>
                             </form>
-                            <form action="{{ path('panier_reduire', { id: produit.produit.id }) }}" method="post">
-                                <button type="submit">Enlever un produit</button>
+                            <form action="{{ path('panier_reduire', { id: produit.produit.id }) }}" method="post" class="d-flex align-items-center">
+                                <input type="number" name="quantite" min="1" value="0" class="form-control me-2" style="width: 80px;">
+                                <button type="submit" class="btn btn-warning btn-sm">Réduire</button>
                             </form>
                         </td>
                         <td>
@@ -60,6 +62,12 @@
                 {% endfor %}
             </tbody>
         </table>
+
+        <form action="{{ path('commande_creer') }}" method="post">
+            <button type="submit" class="btn btn-success mt-3">Créer une commande</button>
+        </form>
+
+
     {% endif %}
     
     <button type="button" onclick="window.location.href='{{ path('produit_catalogue') }}'">Catalogue</button>

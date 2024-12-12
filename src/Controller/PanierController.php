@@ -123,42 +123,45 @@ public function afficherPanier(SessionInterface $session, ProduitRepository $pro
     }
 
     #[Route('/panier/reduire/{id}', name: 'panier_reduire')]
-    public function reduireProduit(Produit $produit, SessionInterface $session, EntityManagerInterface $em)
-    {
-        $panier = $session->get('panier', []);
-        $id = $produit->getId();
+public function reduireProduit(Produit $produit, Request $request, SessionInterface $session, EntityManagerInterface $em)
+{
+    $quantiteRequise = (int) $request->request->get('quantite', 1); // Récupérer la quantité spécifiée dans le formulaire, ou 1 par défaut
+    $panier = $session->get('panier', []);
+    $id = $produit->getId();
 
-        if (isset($panier[$id])) {
-            if ($panier[$id] > 1) {
-                $panier[$id]--;
-            } else {
-                unset($panier[$id]);
-            }
+    if (isset($panier[$id])) {
+        // Réduire la quantité selon la quantité demandée
+        if ($panier[$id] > $quantiteRequise) {
+            $panier[$id] -= $quantiteRequise;
+        } else {
+            unset($panier[$id]);
         }
-
-        $session->set('panier', $panier);
-
-        // Réduire la quantité dans la base de données
-        $user = $this->getUser();
-        $panierEntity = $em->getRepository(Panier::class)->findOneBy(['user' => $user]);
-        $panierProduit = $em->getRepository(PanierProduit::class)->findOneBy([
-            'panier' => $panierEntity,
-            'produit' => $produit
-        ]);
-
-        if ($panierProduit) {
-            if ($panier[$id] > 0) {
-                $panierProduit->setQuantite($panier[$id]);
-            } else {
-                $em->remove($panierProduit);
-            }
-        }
-
-        $em->flush();
-
-        $this->addFlash('success', 'Quantité réduite.');
-        return $this->redirectToRoute('panier');
     }
+
+    $session->set('panier', $panier);
+
+    // Réduire la quantité dans la base de données
+    $user = $this->getUser();
+    $panierEntity = $em->getRepository(Panier::class)->findOneBy(['user' => $user]);
+    $panierProduit = $em->getRepository(PanierProduit::class)->findOneBy([
+        'panier' => $panierEntity,
+        'produit' => $produit
+    ]);
+
+    if ($panierProduit) {
+        if ($panier[$id] > 0) {
+            $panierProduit->setQuantite($panier[$id]);
+        } else {
+            $em->remove($panierProduit);
+        }
+    }
+
+    $em->flush();
+
+    $this->addFlash('success', 'Quantité réduite.');
+    return $this->redirectToRoute('panier');
+}
+
 
     #[Route('/panier/supprimer/{id}', name: 'panier_supprimer')]
     public function supprimerProduit(Produit $produit, SessionInterface $session, EntityManagerInterface $em)

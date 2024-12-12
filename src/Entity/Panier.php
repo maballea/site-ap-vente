@@ -19,8 +19,6 @@ class Panier
     #[ORM\JoinColumn(nullable: false)]
     private $user;
 
-    // Si vous voulez ajouter des produits au panier, il faudrait une relation ManyToMany ou OneToMany avec l'entité Produit.
-    // Par exemple, si un panier contient plusieurs produits, ajoutez ce champ :
     #[ORM\OneToMany(mappedBy: 'panier', targetEntity: PanierProduit::class, cascade: ['persist', 'remove'])]
     private $produits;
 
@@ -68,4 +66,11 @@ class Panier
 
         return $this;
     }
+
+    // Ajout de la méthode getPanierProduits() pour accéder aux produits du panier
+    public function getPanierProduits(): Collection
+    {
+        return $this->produits;
+    }
 }
+
