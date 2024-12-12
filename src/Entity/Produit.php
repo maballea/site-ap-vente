@@ -30,7 +30,7 @@ class Produit
 
     public function __construct()
     {
-        $this->paniers = new ArrayCollection();
+        // Initialise la collection de paniers si nécessaire
     }
 
     public function getId(): ?int
@@ -71,20 +71,14 @@ class Produit
         return $this;
     }
 
-    public function getPaniers(): Collection
+    public function getCategorie(): ?Categorie
     {
-        return $this->paniers;
+        return $this->categorie;
     }
 
-public function getCategorie(): ?Categorie
-{
-    return $this->categorie;
-}
-
-public function setCategorie(?Categorie $categorie): self
-{
-    $this->categorie = $categorie;
-    return $this;
-}
-
+    public function setCategorie(?Categorie $categorie): self
+    {
+        $this->categorie = $categorie;
+        return $this;
+    }
 }

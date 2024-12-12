@@ -19,14 +19,10 @@ class Panier
     #[ORM\JoinColumn(nullable: false)]
     private $user;
 
-    // La relation ManyToMany avec Produit
-    #[ORM\ManyToMany(targetEntity: Produit::class, mappedBy: 'paniers')]
+    // Si vous voulez ajouter des produits au panier, il faudrait une relation ManyToMany ou OneToMany avec l'entité Produit.
+    // Par exemple, si un panier contient plusieurs produits, ajoutez ce champ :
+    #[ORM\OneToMany(mappedBy: 'panier', targetEntity: PanierProduit::class, cascade: ['persist', 'remove'])]
     private $produits;
-
-    public function __construct()
-    {
-        $this->produits = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -41,31 +37,35 @@ class Panier
     public function setUser(User $user): self
     {
         $this->user = $user;
+        return $this;
+    }
+
+    public function __construct()
+    {
+        $this->produits = new ArrayCollection();
+    }
+
+    // Méthodes pour manipuler les produits dans le panier (ajouter, supprimer, etc.)
+    public function addProduit(PanierProduit $produit): self
+    {
+        if (!$this->produits->contains($produit)) {
+            $this->produits[] = $produit;
+            $produit->setPanier($this);
+        }
 
         return $this;
     }
 
-    public function getProduits(): Collection
+    public function removeProduit(PanierProduit $produit): self
     {
-        return $this->produits;
-    }
+        if ($this->produits->contains($produit)) {
+            $this->produits->removeElement($produit);
+            // On n'oublie pas de détruire la relation inverse
+            if ($produit->getPanier() === $this) {
+                $produit->setPanier(null);
+            }
+        }
 
-   public function addProduit(Produit $produit): self
-    {
-        $this->produits[] = $produit;
-        $produit->getPaniers()->add($this); // Synchronisation avec l'entité Produit
         return $this;
     }
-
-
-
-public function removeProduit(Produit $produit): self
-{
-    if ($this->produits->contains($produit)) {
-        $this->produits->removeElement($produit);
-        $produit->getPaniers()->removeElement($this); // Synchronisation avec l'entité Produit
-    }
-    return $this;
-}
-
 }

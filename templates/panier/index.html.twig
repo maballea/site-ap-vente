@@ -5,11 +5,10 @@
 {% block body %}
 
 {% if not app.user %}
-        
-        <p><a href="{{ path('app_login') }}">Se connecter</a> pour ajouter des produits à votre panier.</p>
-    {% elseif not is_granted('ROLE_CLIENT') %}
-        <h1>{{ message }}</h1>
-        <p><a href="{{ path('app_login') }}">Se connecter</a> pour ajouter des produits à votre panier.</p>
+    <p><a href="{{ path('app_login') }}">Se connecter</a> pour ajouter des produits à votre panier.</p>
+{% elseif not is_granted('ROLE_CLIENT') %}
+    <h1>{{ message }}</h1>
+    <p><a href="{{ path('app_login') }}">Se connecter</a> pour ajouter des produits à votre panier.</p>
 {% else %}
 
     <h1>Mon Panier</h1>
@@ -21,44 +20,51 @@
             <option value="prix" {% if tri == 'prix' %}selected{% endif %}>Prix</option>
         </select>
     </form>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>Nom</th>
-                <th>Description</th>
-                <th>Quantite</th>
-                <th>Prix Unitaire</th>
-                <th>Prix Total</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for produit in dataPanier %}
+
+    {% if dataPanier is empty %}
+        <p>Votre panier est vide.</p>
+    {% else %}
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ produit.produit.nom }}</td>
-                    <td>{{ produit.produit.description }}</td>
-                    <td>{{ produit.quantite }}</td>
-                    <td>{{ produit.produit.prix }} €</td>
-                    <td>{{ produit.produit.prix * produit.quantite }} €</td> <!-- Calcul du prix total -->
-                    <td>
-                        <form action="{{ path('panier_ajouter-via-panier', { id: produit.produit.id }) }}" method="post">
-                            <button type="submit">Ajouter un produit</button>
-                        </form>
-                        <form action="{{ path('panier_reduire', { id: produit.produit.id }) }}" method="post">
-                            <button type="submit">Enlever un produit</button>
-                        </form>
-                    </td>
-                    <td>
-                        <form action="{{ path('panier_supprimer', { id: produit.produit.id }) }}" method="post">
-                            <button type="submit">Supprimer un produit</button>
-                        </form>
-                    </td>
+                    <th>Nom</th>
+                    <th>Description</th>
+                    <th>Quantite</th>
+                    <th>Prix Unitaire</th>
+                    <th>Prix Total</th>
+                    <th>Actions</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for produit in dataPanier %}
+                    <tr>
+                        <td>{{ produit.produit.nom }}</td>
+                        <td>{{ produit.produit.description }}</td>
+                        <td>{{ produit.quantite }}</td>
+                        <td>{{ produit.produit.prix }} €</td>
+                        <td>{{ produit.produit.prix * produit.quantite }} €</td> <!-- Calcul du prix total -->
+                        <td>
+                            <form action="{{ path('panier_ajouter', { id: produit.produit.id }) }}" method="post">
+                                <button type="submit">Ajouter un produit</button>
+                            </form>
+                            <form action="{{ path('panier_reduire', { id: produit.produit.id }) }}" method="post">
+                                <button type="submit">Enlever un produit</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form action="{{ path('panier_supprimer', { id: produit.produit.id }) }}" method="post">
+                                <button type="submit">Supprimer un produit</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    
     <button type="button" onclick="window.location.href='{{ path('produit_catalogue') }}'">Catalogue</button>
     <button type="button" onclick="window.location.href='{{ path('client_acceuil') }}'">Accueil</button>
-    {% endif %}
+
+{% endif %}
+
 {% endblock %}
