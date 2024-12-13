@@ -30,13 +30,18 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto d-flex align-items-center">
-                    {% if app.user %}
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <!-- Admin -->
-                            <li class="nav-item">
+                    <!-- Admin -->
+                        <li class="nav-item">
                             <a class="nav-link" href="{{ path('produit_catalogue') }}">Catalogue</a>
                         </li>
-                        {% endif %}
+                    
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CLIENT') %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('commande') }}">Commandes</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% if app.user %}
                         
                         <!-- Déconnexion -->
                         <li class="nav-item">
@@ -45,9 +50,6 @@
                     {% else %}
                         <!-- Non connecté -->
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('produit_catalogue') }}">Catalogue</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link" href="{{ path('app_register') }}">S'inscrire</a>
                         </li>
                         <li class="nav-item">
@@ -55,7 +57,7 @@
                         </li>
                     {% endif %}
                     
-                    <!-- Panier pour tout le monde -->
+                    <!-- Tout sauf Admin -->
                     {% if not is_granted('ROLE_ADMIN') %}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('panier') }}">
@@ -63,6 +65,8 @@
                             </a>
                         </li>
                     {% endif %}
+
+                    
                 </ul>
             </div>
         </div>

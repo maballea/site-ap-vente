@@ -45,12 +45,12 @@ class DetailsCommande
         return $this;
     }
 
-    public function getProduit(): ?Produits
+    public function getProduit(): ?Produit
     {
         return $this->produit;
     }
 
-    public function setProduit(?Produits $produit): self
+    public function setProduit(?Produit $produit): self
     {
         $this->produit = $produit;
 

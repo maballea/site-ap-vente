@@ -17,7 +17,7 @@ class CommandeController extends AbstractController
     /**
      * Liste des commandes d'un utilisateur connecté
      */
-    #[Route('/commande', name: 'app_commande')]
+    #[Route('/commande', name: 'commande')]
     #[IsGranted("ROLE_CLIENT")]
     public function index(CommandeRepository $commandeRepository): Response
     {
@@ -56,7 +56,7 @@ class CommandeController extends AbstractController
         $commande = new Commande();
         $commande->setUser($user);
         $commande->setDateCommande(new \DateTime());
-        $commande->setEtatCommande('Créée');
+        $commande->setEtatCommande('En cours de validation');
         $totalCommande = 0;
 
         // Ajouter les détails de la commande à partir des produits du panier
@@ -92,8 +92,14 @@ class CommandeController extends AbstractController
         // Ajouter un message de succès
         $this->addFlash('success', 'Commande créée avec succès !');
 
+        foreach ($panier->getPanierProduits() as $item) {
+            $entityManager->remove($item);
+        }
+        $entityManager->flush();
+        
+
         // Rediriger vers la page des commandes
-        return $this->redirectToRoute('app_commande');
+        return $this->redirectToRoute('commande');
     }
     
     /**

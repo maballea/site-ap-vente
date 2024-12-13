@@ -6,9 +6,6 @@
 
 {% if not app.user %}
     <p><a href="{{ path('app_login') }}">Se connecter</a> pour ajouter des produits à votre panier.</p>
-{% elseif not is_granted('ROLE_CLIENT') %}
-    <h1>{{ message }}</h1>
-    <p><a href="{{ path('app_login') }}">Se connecter</a> pour ajouter des produits à votre panier.</p>
 {% else %}
 
     <h1>Mon Panier</h1>

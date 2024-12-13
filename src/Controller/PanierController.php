@@ -21,10 +21,7 @@ public function afficherPanier(SessionInterface $session, ProduitRepository $pro
     // Récupérer l'utilisateur connecté
     $user = $this->getUser();
     
-    if (!$user) {
-        // Si l'utilisateur n'est pas connecté, on redirige ou on affiche un message
-        return $this->redirectToRoute('login');
-    }
+    
 
     // Chercher le panier de l'utilisateur dans la base de données
     $panierEntity = $em->getRepository(Panier::class)->findOneBy(['user' => $user]);
