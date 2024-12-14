@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mes Commandes{% endblock %}
+{% block title %}Commandes{% endblock %}
 
 {% block body %}
     <h1>Mes Commandes</h1>
-    
+
     {% if commandes is empty %}
         <p>Vous n'avez pas encore passé de commande.</p>
     {% else %}
@@ -27,17 +27,35 @@
                         <td>{{ commande.etatCommande }}</td>
                         <td>
                             <a href="{{ path('app_commande_details', {id: commande.id}) }}">Voir détails</a>
+                            
+                            {% if is_granted('ROLE_CLIENT') and commande.user == app.user %}
+                                <form action="{{ path('commande_supprimer', { id: commande.id }) }}" method="post" style="display:inline;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ commande.id) }}">
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir annuler cette commande ?')">Annuler</button>
+                                </form>
+                            {% endif %}
+
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <form action="{{ path('commande_modifier', { id: commande.id }) }}" method="post" style="display:inline;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('commande_modifier_' ~ commande.id) }}">
+                                    <button type="submit" class="btn btn-primary">
+                                        {% if commande.etatCommande == 'En attente de validation' %}
+                                            Valider
+                                        {% else %}
+                                            Revenir à "En attente"
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
-        {% if is_granted('ROLE_ADMIN') %}
-                <button type="button" onclick="window.location.href='{{ path('admin_acceuil') }}'" class="btn btn-secondary">Accueil</button>
-            {% elseif is_granted('ROLE_CLIENT') %}
-                <button type="button" onclick="window.location.href='{{ path('client_acceuil') }}'" class="btn btn-secondary">Accueil Client</button>
-                <button type="button" onclick="window.location.href='{{ path('panier') }}'" class="btn btn-secondary">Voir le Panier</button>
-            {% endif %}
 
+        {% if is_granted('ROLE_CLIENT') %}
+            <button type="button" onclick="window.location.href='{{ path('client_acceuil') }}'" class="btn btn-secondary">Accueil</button>
+            <button type="button" onclick="window.location.href='{{ path('panier') }}'" class="btn btn-secondary">Voir le Panier</button>
+        {% endif %}
     {% endif %}
 {% endblock %}

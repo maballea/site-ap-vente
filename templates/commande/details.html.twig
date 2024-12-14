@@ -3,7 +3,7 @@
 {% block title %}Détails de la Commande{% endblock %}
 
 {% block body %}
-    <h1>Détails de la Commande #{{ commande.id }}</h1>
+    <h1>Détails de la Commande </h1>
     
     <p><strong>Date :</strong> {{ commande.dateCommande|date('d/m/Y H:i') }}</p>
     <p><strong>Total :</strong> {{ commande.totalCommande }} €</p>
@@ -11,12 +11,12 @@
 
     <h2>Produits</h2>
     <ul>
-        {% for details in commande.detailsCommande %}
+        {% for details in commande.detailsCommandes %}
             <li>
                 {{ details.produit.nom }} - {{ details.quantite }} x {{ details.prixUnitaire }} €
             </li>
         {% endfor %}
     </ul>
 
-    <a href="{{ path('app_commande') }}">Retour à la liste des commandes</a>
+    <a href="{{ path('commande') }}">Retour à la liste des commandes</a>
 {% endblock %}

@@ -9,7 +9,7 @@
 <div class="container mt-5">
     <!-- Section bienvenue avec le nom de l'utilisateur -->
     <div class="text-center mb-4">
-        <h1>Bienvenue, <strong>{{ app.user.prenom }}</strong> ! <span class="text-success">✅</span></h1>
+        <h1>Bienvenue, <strong>{{ app.user.prenom }}</strong> ! </h1>
         <p class="lead">Voici votre espace client.</p>
     </div>
 
@@ -17,25 +17,13 @@
     <div class="d-flex justify-content-center mb-4">
         <button type="button" class="btn btn-primary btn-lg me-3" onclick="window.location.href='{{ path('produit_catalogue') }}'">Voir le Catalogue</button>
         <button type="button" class="btn btn-warning btn-lg me-3" onclick="window.location.href='{{ path('panier') }}'">Voir mon Panier</button>
+        <button type="button" class="btn btn-success btn-lg me-3" onclick="window.location.href='{{ path('commande') }}'">Voir mes Commandes</button>
         <button type="button" class="btn btn-danger btn-lg" id="deconnexion-btn">Déconnexion</button>
-    </div>
-
-    <!-- Alerte pour la déconnexion -->
-    <div class="alert alert-warning" role="alert">
-        Si vous vous déconnectez, votre panier sera perdu. Assurez-vous de finaliser vos achats.
     </div>
 
 </div>
 
-<script>
-    document.querySelector('#deconnexion-btn').addEventListener('click', function(event) {
-        if (!confirm('Êtes-vous sûr de vouloir vous déconnecter ? Votre panier sera perdu.')) {
-            event.preventDefault(); // Annuler la déconnexion si l'utilisateur refuse
-        } else {
-            window.location.href = '{{ path('app_logout') }}'; // Rediriger vers la route de déconnexion
-        }
-    });
-</script>
+
 
 <!-- Ajout de Bootstrap JS via CDN pour les composants interactifs comme le modal -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

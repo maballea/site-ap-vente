@@ -117,7 +117,7 @@
             {% if is_granted('ROLE_ADMIN') %}
                 <button type="button" onclick="window.location.href='{{ path('admin_acceuil') }}'" class="btn btn-secondary">Accueil</button>
             {% elseif is_granted('ROLE_CLIENT') %}
-                <button type="button" onclick="window.location.href='{{ path('client_acceuil') }}'" class="btn btn-secondary">Accueil Client</button>
+                <button type="button" onclick="window.location.href='{{ path('client_acceuil') }}'" class="btn btn-secondary">Accueil</button>
                 <button type="button" onclick="window.location.href='{{ path('panier') }}'" class="btn btn-secondary">Voir le Panier</button>
             {% else %}
                 <button type="button" onclick="window.location.href='{{ path('app_user') }}'" class="btn btn-secondary">Accueil</button>
