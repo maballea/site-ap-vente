@@ -67,77 +67,97 @@ public function afficherPanier(SessionInterface $session, ProduitRepository $pro
 }
 
 
-    #[Route('/panier/ajouter/{id}', name: 'panier_ajouter', methods: ['POST'])]
-    public function ajouterProduit(Produit $produit, SessionInterface $session, Request $request, EntityManagerInterface $em)
-    {
-        $panier = $session->get('panier', []);
-        $id = $produit->getId();
-        $quantite = (int) $request->request->get('quantite', 1); // Récupère la quantité du formulaire
+#[Route('/panier/ajouter/{id}', name: 'panier_ajouter', methods: ['POST'])]
+public function ajouterProduit(Produit $produit, SessionInterface $session, Request $request, EntityManagerInterface $em)
+{
+    $panier = $session->get('panier', []);
+    $id = $produit->getId();
+    $quantite = (int) $request->request->get('quantite', 1); // Récupère la quantité du formulaire
 
-        if ($quantite <= 0) {
-            $this->addFlash('error', 'La quantité doit être supérieure à zéro.');
-            return $this->redirectToRoute('panier');
-        }
-
-        if (isset($panier[$id])) {
-            $panier[$id] += $quantite;
-        } else {
-            $panier[$id] = $quantite;
-        }
-
-        $session->set('panier', $panier);
-
-        // Enregistrer dans la base de données via l'entité PanierProduit
-        $user = $this->getUser();
-        $panierEntity = $em->getRepository(Panier::class)->findOneBy(['user' => $user]);
-
-        if (!$panierEntity) {
-            $panierEntity = new Panier();
-            $panierEntity->setUser($user);
-            $em->persist($panierEntity);
-        }
-
-        // Vérifier si le produit existe déjà dans le panier pour cet utilisateur
-        $panierProduit = $em->getRepository(PanierProduit::class)->findOneBy([
-            'panier' => $panierEntity,
-            'produit' => $produit
-        ]);
-
-        if ($panierProduit) {
-            $panierProduit->setQuantite($panierProduit->getQuantite() + $quantite);
-        } else {
-            $panierProduit = new PanierProduit();
-            $panierProduit->setPanier($panierEntity);
-            $panierProduit->setProduit($produit);
-            $panierProduit->setQuantite($quantite);
-            $em->persist($panierProduit);
-        }
-
-        $em->flush();
-        $this->addFlash('success', 'Produit ajouté au panier avec succès.');
-
-        return $this->redirectToRoute('panier');
+    // Vérifier si la quantité demandée est valide
+    if ($quantite <= 0) {
+        $this->addFlash('error', 'La quantité doit être supérieure à zéro.');
+        return $this->redirectToRoute('produit_catalogue');
     }
 
-    #[Route('/panier/reduire/{id}', name: 'panier_reduire')]
+    // Vérifier si la quantité demandée est disponible en stock
+    if ($quantite > $produit->getStock()) {
+        $this->addFlash('error', 'Quantité de produit indisponible.');
+        return $this->redirectToRoute('produit_catalogue');
+    }
+
+    // Ajouter au panier dans la session
+    if (isset($panier[$id])) {
+        $panier[$id] += $quantite;
+    } else {
+        $panier[$id] = $quantite;
+    }
+
+    $session->set('panier', $panier);
+
+    // Enregistrer dans la base de données via l'entité PanierProduit
+    $user = $this->getUser();
+    $panierEntity = $em->getRepository(Panier::class)->findOneBy(['user' => $user]);
+
+    if (!$panierEntity) {
+        $panierEntity = new Panier();
+        $panierEntity->setUser($user);
+        $em->persist($panierEntity);
+    }
+
+    // Vérifier si le produit existe déjà dans le panier pour cet utilisateur
+    $panierProduit = $em->getRepository(PanierProduit::class)->findOneBy([
+        'panier' => $panierEntity,
+        'produit' => $produit
+    ]);
+
+    if ($panierProduit) {
+        $panierProduit->setQuantite($panierProduit->getQuantite() + $quantite);
+    } else {
+        $panierProduit = new PanierProduit();
+        $panierProduit->setPanier($panierEntity);
+        $panierProduit->setProduit($produit);
+        $panierProduit->setQuantite($quantite);
+        $em->persist($panierProduit);
+    }
+
+    // Réduire le stock du produit
+    $produit->setStock($produit->getStock() - $quantite);
+    $em->persist($produit);
+
+    $em->flush();
+    $this->addFlash('success', 'Produit ajouté au panier avec succès.');
+
+    return $this->redirectToRoute('produit_catalogue');
+}
+
+
+#[Route('/panier/reduire/{id}', name: 'panier_reduire')]
 public function reduireProduit(Produit $produit, Request $request, SessionInterface $session, EntityManagerInterface $em)
 {
     $quantiteRequise = (int) $request->request->get('quantite', 1); // Récupérer la quantité spécifiée dans le formulaire, ou 1 par défaut
     $panier = $session->get('panier', []);
     $id = $produit->getId();
 
+    // Vérifier si le produit est dans le panier
     if (isset($panier[$id])) {
-        // Réduire la quantité selon la quantité demandée
+        $quantiteReduite = min($quantiteRequise, $panier[$id]); // Limiter la réduction à la quantité présente dans le panier
+
+        // Réduire la quantité ou supprimer le produit du panier
         if ($panier[$id] > $quantiteRequise) {
             $panier[$id] -= $quantiteRequise;
         } else {
             unset($panier[$id]);
         }
+
+        // Ajouter la quantité réduite au stock du produit
+        $produit->setStock($produit->getStock() + $quantiteReduite);
+        $em->persist($produit);
     }
 
     $session->set('panier', $panier);
 
-    // Réduire la quantité dans la base de données
+    // Réduire la quantité dans la base de données pour le panier utilisateur
     $user = $this->getUser();
     $panierEntity = $em->getRepository(Panier::class)->findOneBy(['user' => $user]);
     $panierProduit = $em->getRepository(PanierProduit::class)->findOneBy([
@@ -146,7 +166,7 @@ public function reduireProduit(Produit $produit, Request $request, SessionInterf
     ]);
 
     if ($panierProduit) {
-        if ($panier[$id] > 0) {
+        if (isset($panier[$id]) && $panier[$id] > 0) {
             $panierProduit->setQuantite($panier[$id]);
         } else {
             $em->remove($panierProduit);
@@ -155,9 +175,10 @@ public function reduireProduit(Produit $produit, Request $request, SessionInterf
 
     $em->flush();
 
-    $this->addFlash('success', 'Quantité réduite.');
+    $this->addFlash('success', 'Quantité réduite et stock mis à jour.');
     return $this->redirectToRoute('panier');
 }
+
 
 
     #[Route('/panier/supprimer/{id}', name: 'panier_supprimer')]

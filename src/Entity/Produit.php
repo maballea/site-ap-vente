@@ -24,6 +24,9 @@ class Produit
     #[ORM\Column(type: 'float')]
     private $prix;
 
+    #[ORM\Column(type: 'integer')]
+    private $stock;
+
     
 
     #[ORM\ManyToOne(targetEntity: Categorie::class, inversedBy: 'produits')]
@@ -113,4 +116,16 @@ public function removeDetailsCommande(DetailsCommande $detailsCommande): self
         $this->categorie = $categorie;
         return $this;
     }
+
+    public function getStock(): ?int
+{
+    return $this->stock;
+}
+
+public function setStock(int $stock): self
+{
+    $this->stock = $stock;
+    return $this;
+}
+
 }

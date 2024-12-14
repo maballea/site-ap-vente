@@ -5,30 +5,33 @@
 {% block body %}
 
 {% if not app.user %}
-    <p><a href="{{ path('app_login') }}">Se connecter</a> pour ajouter des produits à votre panier.</p>
+    <p class="alert alert-warning text-center">
+        <a href="{{ path('app_login') }}">Se connecter</a> pour ajouter des produits à votre panier.
+    </p>
 {% else %}
 
-    <h1>Mon Panier</h1>
+    <h1 class="my-4 text-center">Mon Panier</h1>
 
-    <form method="GET" action="{{ path('panier') }}">
-        <label for="tri">Trier par :</label>
-        <select name="tri" id="tri" onchange="this.form.submit()">
+    <form method="GET" action="{{ path('panier') }}" class="mb-4 d-flex justify-content-center align-items-center">
+        <label for="tri" class="me-2">Trier par :</label>
+        <select name="tri" id="tri" class="form-select w-auto" onchange="this.form.submit()">
             <option value="nom" {% if tri == 'nom' %}selected{% endif %}>Nom</option>
             <option value="prix" {% if tri == 'prix' %}selected{% endif %}>Prix</option>
         </select>
     </form>
 
     {% if dataPanier is empty %}
-        <p>Votre panier est vide.</p>
+        <p class="alert alert-info text-center">Votre panier est vide.</p>
     {% else %}
-        <table>
-            <thead>
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
                 <tr>
                     <th>Nom</th>
                     <th>Description</th>
-                    <th>Quantite</th>
+                    <th>Quantité</th>
                     <th>Prix Unitaire</th>
                     <th>Prix Total</th>
+                    <th>Stock Disponible</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -39,20 +42,27 @@
                         <td>{{ produit.produit.description }}</td>
                         <td>{{ produit.quantite }}</td>
                         <td>{{ produit.produit.prix }} €</td>
-                        <td>{{ produit.produit.prix * produit.quantite }} €</td> <!-- Calcul du prix total -->
+                        <td>{{ produit.produit.prix * produit.quantite }} €</td>
                         <td>
-                            <form action="{{ path('panier_ajouter', { id: produit.produit.id }) }}" method="post" class="d-flex align-items-center">
-                                <input type="number" name="quantite" min="1" value="0" class="form-control me-2" style="width: 80px;">
-                                <button type="submit" class="btn btn-primary btn-sm">Ajouter</button>
-                            </form>
-                            <form action="{{ path('panier_reduire', { id: produit.produit.id }) }}" method="post" class="d-flex align-items-center">
-                                <input type="number" name="quantite" min="1" value="0" class="form-control me-2" style="width: 80px;">
-                                <button type="submit" class="btn btn-warning btn-sm">Réduire</button>
-                            </form>
+                            {% if produit.produit.stock > 0 %}
+                                {{ produit.produit.stock }}
+                            {% else %}
+                                <span class="text-danger fw-bold">Rupture de Stock</span>
+                            {% endif %}
                         </td>
                         <td>
+                            {% if produit.produit.stock > 0 %}
+                                <form action="{{ path('panier_ajouter', { id: produit.produit.id }) }}" method="post" class="d-flex align-items-center mb-2">
+                                    <input type="number" name="quantite" min="1" max="{{ produit.produit.stock }}" value="1" class="form-control me-2" style="width: 80px;">
+                                    <button type="submit" class="btn btn-primary btn-sm">Ajouter</button>
+                                </form>
+                                <form action="{{ path('panier_reduire', { id: produit.produit.id }) }}" method="post" class="d-flex align-items-center mb-2">
+                                    <input type="number" name="quantite" min="1" value="1" class="form-control me-2" style="width: 80px;">
+                                    <button type="submit" class="btn btn-warning btn-sm">Réduire</button>
+                                </form>
+                            {% endif %}
                             <form action="{{ path('panier_supprimer', { id: produit.produit.id }) }}" method="post">
-                                <button type="submit">Supprimer un produit</button>
+                                <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
                             </form>
                         </td>
                     </tr>
@@ -60,15 +70,17 @@
             </tbody>
         </table>
 
-        <form action="{{ path('commande_creer') }}" method="post">
-            <button type="submit" class="btn btn-success mt-3">Créer une commande</button>
-        </form>
-
-
+        <div class="text-center mt-4">
+            <form action="{{ path('commande_creer') }}" method="post">
+                <button type="submit" class="btn btn-success">Créer une commande</button>
+            </form>
+        </div>
     {% endif %}
-    
-    <button type="button" onclick="window.location.href='{{ path('produit_catalogue') }}'">Catalogue</button>
-    <button type="button" onclick="window.location.href='{{ path('client_acceuil') }}'">Accueil</button>
+
+    <div class="text-center mt-4">
+        <button type="button" class="btn btn-secondary" onclick="window.location.href='{{ path('produit_catalogue') }}'">Catalogue</button>
+        <button type="button" class="btn btn-secondary" onclick="window.location.href='{{ path('client_acceuil') }}'">Accueil</button>
+    </div>
 
 {% endif %}
 

@@ -1,11 +1,55 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Produit{% endblock %}
+{% block title %}Modifier un produit{% endblock %}
 
 {% block body %}
-    <h1>Modifier un produit</h1>
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button type="submit">Enregistrer</button>
-    {{ form_end(form) }}
+    <div class="container mt-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h1 class="h5 mb-0">Modifier un produit</h1>
+            </div>
+            <div class="card-body">
+                {{ form_start(form) }}
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ form_row(form.nom, {
+                                'label': 'Nom du produit',
+                                'attr': {'class': 'form-control'}
+                            }) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.prix, {
+                                'label': 'Prix (€)',
+                                'attr': {'class': 'form-control'}
+                            }) }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{ form_row(form.description, {
+                            'label': 'Description',
+                            'attr': {'class': 'form-control', 'rows': 4}
+                        }) }}
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ form_row(form.stock, {
+                                'label': 'Stock disponible',
+                                'attr': {'class': 'form-control'}
+                            }) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.categorie, {
+                                'label': 'Catégorie',
+                                'attr': {'class': 'form-select'}
+                            }) }}
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-success">Enregistrer</button>
+                        <a href="{{ path('produit_catalogue') }}" class="btn btn-secondary">Annuler</a>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
 {% endblock %}

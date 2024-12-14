@@ -63,7 +63,7 @@ public function index(CommandeRepository $commandeRepository): Response
         $commande = new Commande();
         $commande->setUser($user);
         $commande->setDateCommande(new \DateTime());
-        $commande->setEtatCommande('En cours de validation');
+        $commande->setEtatCommande('En attente de validation');
         $totalCommande = 0;
 
         // Ajouter les détails de la commande à partir des produits du panier

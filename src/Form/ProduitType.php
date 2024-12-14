@@ -8,6 +8,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 
 class ProduitType extends AbstractType
 {
@@ -17,7 +18,14 @@ class ProduitType extends AbstractType
             ->add('nom')
             ->add('description')
             ->add('prix')
-            ->add('categorie', EntityType::class, [ // Ajout du champ catégorie
+            ->add('stock', IntegerType::class, [ // Ajout du champ stock
+                'label' => 'Stock',
+                'required' => true,
+                'attr' => [
+                    'min' => 0, // Empêche les valeurs négatives
+                ],
+            ])
+            ->add('categorie', EntityType::class, [ // Champ catégorie
                 'class' => Categorie::class,
                 'choice_label' => 'nom', // Utilise le nom de la catégorie comme label
                 'placeholder' => 'Choisissez une catégorie', // Optionnel, pour avoir une valeur par défaut

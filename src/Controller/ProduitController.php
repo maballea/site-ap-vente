@@ -137,5 +137,46 @@ public function delete(Produit $produit, EntityManagerInterface $entityManager):
     return $this->redirectToRoute('produit_catalogue');
 }
 
+#[Route('/produit/{id}/ajouter', name: 'produit_ajouter', methods: ['POST'])]
+public function ajouterProduit(Produit $produit, Request $request, EntityManagerInterface $em): Response
+{
+    $quantite = (int) $request->request->get('quantite', 1); // Récupère la quantité à ajouter
+
+    if ($quantite <= 0) {
+        $this->addFlash('error', 'La quantité doit être supérieure à zéro.');
+        return $this->redirectToRoute('produit_catalogue');
+    }
+
+    // Mise à jour de la quantité dans la base de données
+    $produit->setStock($produit->getStock() + $quantite);
+    $em->flush();
+
+    $this->addFlash('success', 'Quantité ajoutée au stock.');
+    return $this->redirectToRoute('panier');
+}
+
+#[Route('/produit/{id}/reduire', name: 'produit_reduire', methods: ['POST'])]
+public function reduireProduit(Produit $produit, Request $request, EntityManagerInterface $em): Response
+{
+    $quantite = (int) $request->request->get('quantite', 1); // Récupère la quantité à réduire
+
+    if ($quantite <= 0) {
+        $this->addFlash('error', 'La quantité doit être supérieure à zéro.');
+        return $this->redirectToRoute('produit_catalogue');
+    }
+
+    // Réduire la quantité dans la base de données
+    if ($produit->getStock() >= $quantite) {
+        $produit->setStock($produit->getStock() - $quantite);
+        $em->flush();
+        $this->addFlash('success', 'Quantité réduite du stock.');
+    } else {
+        $this->addFlash('error', 'Stock insuffisant.');
+    }
+
+    return $this->redirectToRoute('produit_catalogue');
+}
+
+
 
 }
