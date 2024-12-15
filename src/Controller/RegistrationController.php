@@ -15,11 +15,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class RegistrationController extends AbstractController
 {
-    /**
-     * Route pour la page d'inscription
-     * 
-     * @Route("/register", name="app_register")
-     */
+    
+    #[Route('/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): Response
     {
         // Création d'un nouvel utilisateur

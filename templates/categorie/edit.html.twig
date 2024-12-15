@@ -3,17 +3,20 @@
 {% block title %}Modifier la Catégorie{% endblock %}
 
 {% block body %}
-    <div class="container mt-4">
-        <h1 class="text-center mb-4">Modifier la Catégorie</h1>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4 text-primary">Modifier la Catégorie</h1>
 
         <!-- Formulaire de modification de catégorie -->
-        <div class="card p-4 mb-4">
-            {{ include('categorie/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+        <div class="card shadow-sm p-4 mb-4">
+            <h2 class="h5 text-center mb-4">Mettez à jour les informations de la catégorie</h2>
+            {{ include('categorie/_form.html.twig', {'button_label': 'Mettre à jour', 'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
         </div>
 
         <!-- Lien retour à la liste des catégories -->
-        <div class="mt-4">
-            <a href="{{ path('categorie_index') }}" class="btn btn-secondary">Retour à la liste</a>
+        <div class="mt-4 text-center">
+            <a href="{{ path('categorie_index') }}" class="btn btn-outline-primary btn-lg">
+                <i class="bi bi-arrow-left-circle"></i> Retour à la liste
+            </a>
         </div>
     </div>
 {% endblock %}

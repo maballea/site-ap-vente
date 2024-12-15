@@ -9,11 +9,9 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
-    /**
-     * Route pour la page de connexion
-     * 
-     * @Route("/login", name="app_login")
-     */
+   
+    #[Route('/login', name: 'app_login')]
+    
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
         // Vérifie si l'utilisateur est déjà connecté, et redirige vers la page cible si c'est le cas
@@ -34,11 +32,7 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    /**
-     * Route pour la déconnexion
-     * 
-     * @Route("/logout", name="app_logout")
-     */
+    #[Route('/logout', name: 'app_logout')]
     public function logout(): void
     {
         // Cette méthode est interceptée par le mécanisme de déconnexion de Symfony

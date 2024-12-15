@@ -8,13 +8,13 @@
 
 <div class="container mt-5">
     <!-- Section bienvenue avec le nom de l'utilisateur -->
-    <div class="text-center mb-4">
+    <div class="text-center mb-5">
         <h1>Bienvenue, <strong>{{ app.user.prenom }}</strong> !</h1>
-        <p class="lead">Voici votre espace client.</p>
+        <p class="lead">Voici votre espace client, explorez nos produits et gérez vos commandes.</p>
     </div>
 
     <!-- Boutons de navigation pour le client -->
-    <div class="d-flex justify-content-center mb-4">
+    <div class="d-flex justify-content-center mb-5">
         <button type="button" class="btn btn-primary btn-lg me-3" onclick="window.location.href='{{ path('produit_catalogue') }}'">Voir le Catalogue</button>
         <button type="button" class="btn btn-warning btn-lg me-3" onclick="window.location.href='{{ path('panier') }}'">Voir mon Panier</button>
         <button type="button" class="btn btn-success btn-lg me-3" onclick="window.location.href='{{ path('commande') }}'">Voir mes Commandes</button>
@@ -25,21 +25,21 @@
     <div class="mt-5">
         <h2 class="text-center mb-4">Produits en Vogue</h2>
         <div class="row">
-    {% for produitData in produitsEnVogue %}
-        {% set produit = produitData[0] %}
-        <div class="col-md-4">
-            <div class="card mb-4 shadow-sm">
-                <img class="card-img-top" src="{{ produit.image }}" alt="{{ produit.nom }}">
-                <div class="card-body">
-                    <h5 class="card-title">{{ produit.nom }}</h5>
-                    <p class="card-text">Vendu {{ produitData.totalVentes }} fois</p>
-                    <a href="#" class="btn btn-primary">Voir le produit</a>
+            {% for produitData in produitsEnVogue %}
+                {% set produit = produitData[0] %}
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm border-light rounded">
+                        <!-- Image redimensionnée à 32x32 px -->
+                        <img class="card-img-top" src="{{ produit.image }}" alt="{{ produit.nom }}" style="width: 32px; height: 32px; object-fit: cover; margin: 0 auto;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ produit.nom }}</h5>
+                            <p class="card-text">Vendu {{ produitData.totalVentes }} fois</p>
+                            <a href="{{ path('produit_catalogue') }}" class="btn btn-primary w-100">Voir le produit</a>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            {% endfor %}
         </div>
-    {% endfor %}
-</div>
-
     </div>
 </div>
 

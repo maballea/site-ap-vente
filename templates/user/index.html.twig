@@ -36,4 +36,26 @@
         </div>
     {% endif %}
 </div>
+
+<!-- Section Produits en Vogue -->
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Produits en Vogue</h2>
+    <div class="row">
+        {% for produitData in produitsEnVogue %}
+            {% set produit = produitData[0] %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm border-light rounded">
+                    <!-- Image redimensionnée à 32x32 px -->
+                    <img class="card-img-top" src="{{ produit.image }}" alt="{{ produit.nom }}" style="width: 32px; height: 32px; object-fit: cover; margin: 0 auto;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ produit.nom }}</h5>
+                        <p class="card-text">Vendu {{ produitData.totalVentes }} fois</p>
+                        <a href="{{ path('produit_catalogue') }}" class="btn btn-primary w-100">Voir le produit</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
 {% endblock %}

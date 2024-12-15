@@ -1,10 +1,13 @@
 {% if not hasProducts %}
-    <form method="post" action="{{ path('categorie_delete', {'id': categorie.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+    <form method="post" action="{{ path('categorie_delete', {'id': categorie.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet élément ?');">
         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ categorie.id) }}">
-        <button class="btn btn-danger">Delete</button>
+        <button class="btn btn-danger btn-lg w-100" type="submit">
+            <i class="bi bi-trash"></i> Supprimer la catégorie
+        </button>
     </form>
 {% else %}
-    <div class="alert alert-warning">
-        Cette catégorie contient des produits, vous ne pouvez pas la supprimer.
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Attention!</strong> Cette catégorie contient des produits, vous ne pouvez pas la supprimer.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 {% endif %}
