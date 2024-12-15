@@ -9,7 +9,7 @@
 <div class="container mt-5">
     <!-- Section bienvenue avec le nom de l'utilisateur -->
     <div class="text-center mb-4">
-        <h1>Bienvenue, <strong>{{ app.user.prenom }}</strong> ! </h1>
+        <h1>Bienvenue, <strong>{{ app.user.prenom }}</strong> !</h1>
         <p class="lead">Voici votre espace client.</p>
     </div>
 
@@ -21,11 +21,29 @@
         <button type="button" class="btn btn-danger btn-lg" id="deconnexion-btn">Déconnexion</button>
     </div>
 
+    <!-- Section Produits en Vogue -->
+    <div class="mt-5">
+        <h2 class="text-center mb-4">Produits en Vogue</h2>
+        <div class="row">
+    {% for produitData in produitsEnVogue %}
+        {% set produit = produitData[0] %}
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <img class="card-img-top" src="{{ produit.image }}" alt="{{ produit.nom }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ produit.nom }}</h5>
+                    <p class="card-text">Vendu {{ produitData.totalVentes }} fois</p>
+                    <a href="#" class="btn btn-primary">Voir le produit</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
 </div>
 
+    </div>
+</div>
 
-
-<!-- Ajout de Bootstrap JS via CDN pour les composants interactifs comme le modal -->
+<!-- Ajout de Bootstrap JS via CDN pour les composants interactifs -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 {% endblock %}

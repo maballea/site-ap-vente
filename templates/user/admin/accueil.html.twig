@@ -13,20 +13,15 @@
         <p class="lead">Voici votre tableau de bord Administrateur.</p>
     </div>
 
-    <!-- Buttons de navigation -->
+    <!-- Boutons de navigation -->
     <div class="d-flex justify-content-center mb-4">
         <button type="button" class="btn btn-primary btn-lg me-3" onclick="window.location.href='{{ path('produit_catalogue') }}'">Voir le Catalogue</button>
         <button type="button" class="btn btn-success btn-lg me-3" onclick="window.location.href='{{ path('commande') }}'">Voir les Commandes</button>
         <button type="button" class="btn btn-danger btn-lg" id="deconnexion-btn">Déconnexion</button>
     </div>
-
-    
-
 </div>
 
-
-
-<!-- Ajout de Bootstrap JS via CDN pour les composants interactifs comme le modal -->
+<!-- Ajout de Bootstrap JS via CDN pour les composants interactifs -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 {% endblock %}

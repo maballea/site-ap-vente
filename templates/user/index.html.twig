@@ -21,9 +21,9 @@
         <script>
             document.querySelector('#deconnexion-btn').addEventListener('click', function(event) {
                 if (!confirm('Êtes-vous sûr de vouloir vous déconnecter ? Votre panier sera perdu.')) {
-                    event.preventDefault(); // Annuler la déconnexion si l'utilisateur refuse
+                    event.preventDefault();
                 } else {
-                    window.location.href = '{{ path('app_logout') }}'; // Rediriger vers la route de déconnexion
+                    window.location.href = '{{ path('app_logout') }}';
                 }
             });
         </script>

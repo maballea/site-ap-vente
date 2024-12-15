@@ -16,84 +16,85 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CategorieController extends AbstractController
 {
     #[Route(name: 'categorie_index', methods: ['GET'])]
-public function index(CategorieRepository $categorieRepository, ProduitRepository $produitRepository): Response
-{
-    // Récupérer toutes les catégories
-    $categories = $categorieRepository->findAll();
+    public function index(CategorieRepository $categorieRepository, ProduitRepository $produitRepository): Response
+    {
+        // Récupération des catégories
+        $categories = $categorieRepository->findAll();
 
-    // Ajouter la variable hasProducts à chaque catégorie
-    foreach ($categories as $categorie) {
-        // Vérifier si la catégorie contient des produits
-        $produits = $produitRepository->findBy(['categorie' => $categorie]);
-        $categorie->hasProducts = count($produits) > 0;
+        // Vérification produits dans chaque catégorie
+        foreach ($categories as $categorie) {
+            $produits = $produitRepository->findBy(['categorie' => $categorie]);
+            $categorie->hasProducts = count($produits) > 0; // Catégorie avec produits
+        }
+
+        return $this->render('categorie/index.html.twig', [
+            'categories' => $categories, // Données des catégories
+        ]);
     }
-
-    return $this->render('categorie/index.html.twig', [
-        'categories' => $categories,
-    ]);
-}
-
 
     #[Route('/new', name: 'categorie_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        // Création nouvelle catégorie
         $categorie = new Categorie();
         $form = $this->createForm(CategorieType::class, $categorie);
         $form->handleRequest($request);
 
+        // Validation du formulaire
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($categorie);
-            $entityManager->flush();
+            $entityManager->flush(); // Sauvegarder dans la base
 
-            return $this->redirectToRoute('categorie_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('categorie_index', [], Response::HTTP_SEE_OTHER); // Redirection après ajout
         }
 
         return $this->render('categorie/new.html.twig', [
-            'categorie' => $categorie,
-            'form' => $form,
+            'categorie' => $categorie, // Catégorie à créer
+            'form' => $form, // Formulaire de création
         ]);
     }
 
     #[Route('/{id}/edit', name: 'categorie_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Categorie $categorie, EntityManagerInterface $entityManager, ProduitRepository $produitRepository): Response
     {
-        // Vérifier si la catégorie a des produits associés
+        // Vérification produits associés à la catégorie
         $produits = $produitRepository->findBy(['categorie' => $categorie]);
 
         $form = $this->createForm(CategorieType::class, $categorie);
         $form->handleRequest($request);
 
+        // Validation du formulaire de modification
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            $entityManager->flush(); // Sauvegarde des modifications
 
-            return $this->redirectToRoute('categorie_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('categorie_index', [], Response::HTTP_SEE_OTHER); // Redirection après modification
         }
 
         return $this->render('categorie/edit.html.twig', [
-            'categorie' => $categorie,
-            'form' => $form,
-            'hasProducts' => count($produits) > 0,  // Vérifier si la catégorie contient des produits
+            'categorie' => $categorie, // Catégorie à éditer
+            'form' => $form, // Formulaire d'édition
+            'hasProducts' => count($produits) > 0, // Indicateur produits associés
         ]);
     }
 
     #[Route('/{id}', name: 'categorie_delete', methods: ['POST'])]
     public function delete(Request $request, Categorie $categorie, EntityManagerInterface $entityManager, ProduitRepository $produitRepository): Response
     {
-        // Vérifier si la catégorie a des produits associés
+        // Vérification produits dans la catégorie avant suppression
         $produits = $produitRepository->findBy(['categorie' => $categorie]);
 
-        // Si la catégorie a des produits, afficher un message et ne pas supprimer
+        // Condition d'empêchement de suppression si produits présents
         if (count($produits) > 0) {
-            $this->addFlash('error', 'Vous ne pouvez pas supprimer cette catégorie car elle contient des produits.');
-            return $this->redirectToRoute('categorie_index');
+            $this->addFlash('error', 'Vous ne pouvez pas supprimer cette catégorie car elle contient des produits.'); // Message erreur
+            return $this->redirectToRoute('categorie_index'); // Redirection après erreur
         }
 
-        // Si la catégorie n'a pas de produits, procéder à la suppression
+        // Suppression de la catégorie si pas de produits
         if ($this->isCsrfTokenValid('delete' . $categorie->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($categorie);
-            $entityManager->flush();
+            $entityManager->remove($categorie); // Suppression de la catégorie
+            $entityManager->flush(); // Sauvegarde après suppression
         }
 
-        return $this->redirectToRoute('categorie_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('categorie_index', [], Response::HTTP_SEE_OTHER); // Redirection après suppression
     }
 }

@@ -27,7 +27,8 @@ class Produit
     #[ORM\Column(type: 'integer')]
     private $stock;
 
-    
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $image = null;
 
     #[ORM\ManyToOne(targetEntity: Categorie::class, inversedBy: 'produits')]
     #[ORM\JoinColumn(nullable: false)]
@@ -40,6 +41,19 @@ public function __construct()
 {
     $this->detailsCommandes = new ArrayCollection();
 }
+
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
 
 public function getDetailsCommandes(): Collection
 {

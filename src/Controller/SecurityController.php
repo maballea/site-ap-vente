@@ -4,29 +4,44 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
-    #[Route(path: '/login', name: 'app_login')]
+    /**
+     * Route pour la page de connexion
+     * 
+     * @Route("/login", name="app_login")
+     */
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        // if ($this->getUser()) {
-        //     return $this->redirectToRoute('target_path');
-        // }
+        // Vérifie si l'utilisateur est déjà connecté, et redirige vers la page cible si c'est le cas
+        if ($this->getUser()) {
+            return $this->redirectToRoute('target_path'); // Remplacez 'target_path' par la route de votre choix
+        }
 
-        // get the login error if there is one
+        // Récupère l'erreur de connexion s'il y en a une
         $error = $authenticationUtils->getLastAuthenticationError();
-        // last username entered by the user
+        
+        // Récupère le dernier nom d'utilisateur entré par l'utilisateur
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('security/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
+        // Renvoie la vue de la page de connexion avec les variables nécessaires
+        return $this->render('security/login.html.twig', [
+            'last_username' => $lastUsername,
+            'error' => $error, // Si une erreur s'est produite, elle sera affichée ici
+        ]);
     }
 
-    #[Route(path: '/logout', name: 'app_logout')]
+    /**
+     * Route pour la déconnexion
+     * 
+     * @Route("/logout", name="app_logout")
+     */
     public function logout(): void
     {
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+        // Cette méthode est interceptée par le mécanisme de déconnexion de Symfony
+        throw new \LogicException('Cette méthode peut rester vide, elle sera interceptée par la clé logout de votre pare-feu.');
     }
 }

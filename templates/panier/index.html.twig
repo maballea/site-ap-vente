@@ -26,6 +26,7 @@
         <table class="table table-bordered table-hover">
             <thead class="table-dark">
                 <tr>
+                    <th>Image</th>
                     <th>Nom</th>
                     <th>Description</th>
                     <th>Quantité</th>
@@ -38,6 +39,7 @@
             <tbody>
                 {% for produit in dataPanier %}
                     <tr>
+                        <td><img src="{{ asset(produit.produit.image) }}" alt="{{ produit.produit.nom }}" style="width: 50px; height: 50px; object-fit: cover;"></td>
                         <td>{{ produit.produit.nom }}</td>
                         <td>{{ produit.produit.description }}</td>
                         <td>{{ produit.quantite }}</td>
