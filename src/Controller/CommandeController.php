@@ -107,9 +107,6 @@ class CommandeController extends AbstractController
         return $this->redirectToRoute('commande');
     }
 
-    /**
-     * Détails d'une commande spécifique
-     */
     #[Route('/commande/{id}', name: 'app_commande_details')]
     #[IsGranted("ROLE_CLIENT")]
     public function details(int $id, CommandeRepository $commandeRepository): Response
